@@ -1,0 +1,2 @@
+# Store every file byte-for-byte (sources have mixed CRLF/LF line endings from upstream).
+* -text

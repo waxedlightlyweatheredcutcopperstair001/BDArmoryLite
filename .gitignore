@@ -1,0 +1,8 @@
+# Build output (the DLL is also copied into GameData/BDArmory*/Plugins, which is tracked)
+build/
+src/obj/
+src/bin/
+# Release zips are regenerated from GameData + Extras
+release/
+# Python caches
+__pycache__/

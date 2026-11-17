@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    BDArmory Lite. The assembly must stay named "BDArmory": Volumetric Explosion FX
+    and NKDR-style configs find it (and several of its types) by name.
+    Builds against the game's own Managed folder, including KSP's mscorlib, so no
+    NuGet packages are needed.
+  -->
+  <PropertyGroup>
+    <!-- Path to KSP_Data/Managed. Override with: dotnet build -p:KSPManaged=/path/to/Managed -->
+    <KSPManaged Condition="'$(KSPManaged)' == ''">$(MSBuildThisFileDirectory)../../Managed-20261117T003226Z-1-001/Managed</KSPManaged>
+  </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <AssemblyName>BDArmory</AssemblyName>
+    <RootNamespace>BDArmory</RootNamespace>
+    <LangVersion>preview</LangVersion>
+    <Nullable>disable</Nullable>
+    <Optimize>true</Optimize>
+    <DebugType>none</DebugType>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+    <AutomaticallyUseReferenceAssemblyPackages>false</AutomaticallyUseReferenceAssemblyPackages>
+    <NoStdLib>true</NoStdLib>
+    <FrameworkPathOverride>$(KSPManaged)</FrameworkPathOverride>
+    <TargetFrameworkRootPath>$(KSPManaged)</TargetFrameworkRootPath>
+    <NoWarn>$(NoWarn);CS0618;CS0649;CS0169;CS0414;CS0162;CS0219;CS0168;CS1998;CS0108;CS0114;CS0067;CS0659;CS0661;CS0660;CS8632;MSB3277;MSB3270</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="$(KSPManaged)/mscorlib.dll" Private="false" />
+    <Reference Include="$(KSPManaged)/System.dll" Private="false" />
+    <Reference Include="$(KSPManaged)/System.Core.dll" Private="false" />
+    <Reference Include="$(KSPManaged)/System.Xml.dll" Private="false" />
+    <Reference Include="$(KSPManaged)/Assembly-CSharp.dll" Private="false" />
+    <Reference Include="$(KSPManaged)/Assembly-CSharp-firstpass.dll" Private="false" />
+    <Reference Include="$(KSPManaged)/KSPAssets.dll" Private="false" />
+    <Reference Include="$(KSPManaged)/UnityEngine*.dll" Private="false" />
+  </ItemGroup>
+</Project>
