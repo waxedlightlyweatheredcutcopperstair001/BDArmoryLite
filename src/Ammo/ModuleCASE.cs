@@ -30,12 +30,12 @@ namespace BDArmory.Ammo
         private double ammoQuantity = 0;
         private double ammoExplosionYield = 0;
 
-        private string explModelPath = "BDArmory/Models/explosion/explosion";
-        private string explSoundPath = "BDArmory/Sounds/explode1";
+        private string explModelPath = "BDArmoryLite/Models/explosion/explosion";
+        private string explSoundPath = "BDArmoryLite/Sounds/explode1";
 
-        private string limitEdexploModelPath = "BDArmory/Models/explosion/30mmExplosion";
-        private string shuntExploModelPath = "BDArmory/Models/explosion/CASEexplosion";
-        private string detDomeModelpath = "BDArmory/Models/explosion/detHemisphere";
+        private string limitEdexploModelPath = "BDArmoryLite/Models/explosion/30mmExplosion";
+        private string shuntExploModelPath = "BDArmoryLite/Models/explosion/CASEexplosion";
+        private string detDomeModelpath = "BDArmoryLite/Models/explosion/detHemisphere";
         public string SourceVessel = "";
         public bool hasDetonated = false;
         private float blastRadius = -1;

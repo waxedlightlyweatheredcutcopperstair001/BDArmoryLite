@@ -176,7 +176,7 @@ namespace BDArmory.UI
 
         #region Textures
 
-        public static string textureDir = "BDArmory/Textures/";
+        public static string textureDir = "BDArmoryLite/Textures/";
 
         bool drawCursor;
         Texture2D cursorTexture = GameDatabase.Instance.GetTexture(textureDir + "aimer", false);
@@ -2124,9 +2124,7 @@ namespace BDArmory.UI
                 BDArmorySettings.SHOW_AMMO_GAUGES = SettingToggle("Ammo gauges in the staging list", BDArmorySettings.SHOW_AMMO_GAUGES);
                 BDArmorySettings.SCROLL_ZOOM_PREVENTION = SettingToggle("Don't zoom the camera when scrolling over windows", BDArmorySettings.SCROLL_ZOOM_PREVENTION);
                 BDArmorySettings.STRICT_WINDOW_BOUNDARIES = SettingToggle("Keep windows on screen", BDArmorySettings.STRICT_WINDOW_BOUNDARIES);
-                BDArmorySettings.SHOW_CATEGORIES = SettingToggle("BDArmory part categories in the editor", BDArmorySettings.SHOW_CATEGORIES);
-                if (BDArmorySettings.SHOW_CATEGORIES)
-                    BDArmorySettings.AUTOCATEGORIZE_PARTS = SettingToggle("Sort parts into categories automatically", BDArmorySettings.AUTOCATEGORIZE_PARTS, 1);
+
 
                 if (HighLogic.LoadedSceneIsFlight && BDTISetup.Instance != null && GUILayout.Button("Team Icons..."))
                     BDTISetup.Instance.ToggleWindow();

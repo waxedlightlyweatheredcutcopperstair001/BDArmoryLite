@@ -15,22 +15,22 @@ namespace BDArmory.Weapons
     /// </summary>
     public class BDModuleNuke : PartModule
     {
-        public static string defaultflashModelPath = "BDArmory/Models/explosion/nuke/nukeFlash";
+        public static string defaultflashModelPath = "BDArmoryLite/Models/explosion/nuke/nukeFlash";
         [KSPField] public string flashModelPath = defaultflashModelPath;
 
-        public static string defaultShockModelPath = "BDArmory/Models/explosion/nuke/nukeShock";
+        public static string defaultShockModelPath = "BDArmoryLite/Models/explosion/nuke/nukeShock";
         [KSPField] public string shockModelPath = defaultShockModelPath;
 
-        public static string defaultBlastModelPath = "BDArmory/Models/explosion/nuke/nukeBlast";
+        public static string defaultBlastModelPath = "BDArmoryLite/Models/explosion/nuke/nukeBlast";
         [KSPField] public string blastModelPath = defaultBlastModelPath;
 
-        public static string defaultPlumeModelPath = "BDArmory/Models/explosion/nuke/nukePlume";
+        public static string defaultPlumeModelPath = "BDArmoryLite/Models/explosion/nuke/nukePlume";
         [KSPField] public string plumeModelPath = defaultPlumeModelPath;
 
-        public static string defaultDebrisModelPath = "BDArmory/Models/explosion/nuke/nukeScatter";
+        public static string defaultDebrisModelPath = "BDArmoryLite/Models/explosion/nuke/nukeScatter";
         [KSPField] public string debrisModelPath = defaultDebrisModelPath;
 
-        public static string defaultBlastSoundPath = "BDArmory/Models/explosion/nuke/nukeBoom";
+        public static string defaultBlastSoundPath = "BDArmoryLite/Models/explosion/nuke/nukeBoom";
         [KSPField] public string blastSoundPath = defaultBlastSoundPath;
 
         [KSPField(isPersistant = true)] public float thermalRadius = 750;

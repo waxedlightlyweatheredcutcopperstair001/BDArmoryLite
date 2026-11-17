@@ -185,9 +185,9 @@ namespace BDArmory.Weapons.Missiles
         public bool terminalGuidanceShouldActivate = true;
 
         [KSPField]
-        public string explModelPath = "BDArmory/Models/explosion/explosion";
+        public string explModelPath = "BDArmoryLite/Models/explosion/explosion";
 
-        public string explSoundPath = "BDArmory/Sounds/explode1";
+        public string explSoundPath = "BDArmoryLite/Sounds/explode1";
 
         //weapon specifications
         [KSPField(advancedTweakable = true, isPersistant = true, guiActive = false, guiActiveEditor = false, guiName = "#LOC_BDArmory_FiringPriority"),
@@ -1351,7 +1351,7 @@ namespace BDArmory.Weapons.Missiles
                 }
 
                 if (sfAudioSource == null) SetupAudio();
-                sfAudioSource.PlayOneShot(SoundUtils.GetAudioClip("BDArmory/Sounds/deployClick"));
+                sfAudioSource.PlayOneShot(SoundUtils.GetAudioClip("BDArmoryLite/Sounds/deployClick"));
                 //SourceVessel = vessel;
 
                 //TARGETING
@@ -1516,7 +1516,7 @@ namespace BDArmory.Weapons.Missiles
                        && Vector3.Angle(vessel.Velocity(), FlightGlobals.ActiveVessel.transform.position - transform.position) < 60)
                     {
                         if (sfAudioSource == null) SetupAudio();
-                        sfAudioSource.PlayOneShot(SoundUtils.GetAudioClip("BDArmory/Sounds/missileFlyby"));
+                        sfAudioSource.PlayOneShot(SoundUtils.GetAudioClip("BDArmoryLite/Sounds/missileFlyby"));
                         hasPlayedFlyby = true;
                     }
                     if (vessel.isActiveVessel)
@@ -2229,7 +2229,7 @@ namespace BDArmory.Weapons.Missiles
                 }
 
             if (!(thrust > 0)) return;
-            sfAudioSource.PlayOneShot(SoundUtils.GetAudioClip("BDArmory/Sounds/launch"));
+            sfAudioSource.PlayOneShot(SoundUtils.GetAudioClip("BDArmoryLite/Sounds/launch"));
             RadarWarningReceiver.WarnMissileLaunch(transform.position, transform.forward, TargetingMode == TargetingModes.Radar);
         }
 
@@ -3009,7 +3009,7 @@ namespace BDArmory.Weapons.Missiles
                         if (Time.time - rcsFiredTimes[i] > rcsAudioMinInterval)
                         {
                             if (sfAudioSource == null) SetupAudio();
-                            sfAudioSource.PlayOneShot(SoundUtils.GetAudioClip("BDArmory/Sounds/popThrust"));
+                            sfAudioSource.PlayOneShot(SoundUtils.GetAudioClip("BDArmoryLite/Sounds/popThrust"));
                             rcsTransforms[i].emit = true;
                             rcsFiredTimes[i] = Time.time;
                         }

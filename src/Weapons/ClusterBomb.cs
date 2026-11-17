@@ -19,10 +19,10 @@ namespace BDArmory.Weapons
         bool deployed;
 
         [KSPField(isPersistant = false)]
-        public string subExplModelPath = "BDArmory/Models/explosion/explosion";
+        public string subExplModelPath = "BDArmoryLite/Models/explosion/explosion";
 
         [KSPField(isPersistant = false)]
-        public string subExplSoundPath = "BDArmory/Sounds/subExplode";
+        public string subExplSoundPath = "BDArmoryLite/Sounds/subExplode";
 
         [KSPField(isPersistant = false)]
         public float deployDelay = 2.5f;
@@ -94,7 +94,7 @@ namespace BDArmory.Weapons
 
         void DeploySubmunitions()
         {
-            missileLauncher.sfAudioSource.PlayOneShot(SoundUtils.GetAudioClip("BDArmory/Sounds/flareSound"));
+            missileLauncher.sfAudioSource.PlayOneShot(SoundUtils.GetAudioClip("BDArmoryLite/Sounds/flareSound"));
             FXMonger.Explode(part, transform.position + part.rb.velocity * Time.fixedDeltaTime, 0.1f);
 
             deployed = true;

@@ -34,8 +34,8 @@ namespace BDArmory.Armor
 
         Vector3 direction = default(Vector3);
 
-        private string ExploModelPath = "BDArmory/Models/explosion/CASEexplosion";
-        private string explSoundPath = "BDArmory/Sounds/explode1";
+        private string ExploModelPath = "BDArmoryLite/Models/explosion/CASEexplosion";
+        private string explSoundPath = "BDArmoryLite/Sounds/explode1";
         public string SourceVessel = "";
 
         public void Start()

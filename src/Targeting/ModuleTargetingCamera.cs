@@ -144,7 +144,7 @@ namespace BDArmory.Targeting
             get
             {
                 if (!riTex)
-                { riTex = GameDatabase.Instance.GetTexture("BDArmory/Textures/rollIndicator", false); }
+                { riTex = GameDatabase.Instance.GetTexture("BDArmoryLite/Textures/rollIndicator", false); }
                 return riTex;
             }
         }
@@ -156,7 +156,7 @@ namespace BDArmory.Targeting
             get
             {
                 if (!rrTex)
-                { rrTex = GameDatabase.Instance.GetTexture("BDArmory/Textures/rollReference", false); }
+                { rrTex = GameDatabase.Instance.GetTexture("BDArmoryLite/Textures/rollReference", false); }
                 return rrTex;
             }
         }

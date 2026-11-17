@@ -110,11 +110,11 @@ namespace BDArmory.Radar
 
         public override void OnAwake()
         {
-            radarPingSound = SoundUtils.GetAudioClip("BDArmory/Sounds/rwrPing");
-            missileLockSound = SoundUtils.GetAudioClip("BDArmory/Sounds/rwrMissileLock");
-            missileLaunchSound = SoundUtils.GetAudioClip("BDArmory/Sounds/mLaunchWarning");
-            sonarPing = SoundUtils.GetAudioClip("BDArmory/Sounds/rwr_sonarping");
-            torpedoPing = SoundUtils.GetAudioClip("BDArmory/Sounds/rwr_torpedoping");
+            radarPingSound = SoundUtils.GetAudioClip("BDArmoryLite/Sounds/rwrPing");
+            missileLockSound = SoundUtils.GetAudioClip("BDArmoryLite/Sounds/rwrMissileLock");
+            missileLaunchSound = SoundUtils.GetAudioClip("BDArmoryLite/Sounds/mLaunchWarning");
+            sonarPing = SoundUtils.GetAudioClip("BDArmoryLite/Sounds/rwr_sonarping");
+            torpedoPing = SoundUtils.GetAudioClip("BDArmoryLite/Sounds/rwr_torpedoping");
         }
 
         public override void OnStart(StartState state)

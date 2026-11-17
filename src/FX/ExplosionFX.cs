@@ -156,7 +156,7 @@ namespace BDArmory.FX
             {
                 if (FlightGlobals.getAltitudeAtPos(Position) > Caliber / 60)
                 {
-                    FXEmitter.CreateFX(Position, (Caliber / 30), "BDArmory/Models/explosion/flakSmoke", "", 0.3f, Caliber / 6);                   
+                    FXEmitter.CreateFX(Position, (Caliber / 30), "BDArmoryLite/Models/explosion/flakSmoke", "", 0.3f, Caliber / 6);                   
                 }
             }
             */

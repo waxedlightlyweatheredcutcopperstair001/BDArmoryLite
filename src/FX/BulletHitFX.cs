@@ -145,21 +145,21 @@ namespace BDArmory.FX
             if (!BDArmorySettings.PAINTBALL_MODE)
             {
                 if (decalPool_large == null)
-                    decalPool_large = Decal.CreateDecalPool("BDArmory/Models/bulletDecal/BulletDecal2");
+                    decalPool_large = Decal.CreateDecalPool("BDArmoryLite/Models/bulletDecal/BulletDecal2");
 
                 if (decalPool_small == null)
-                    decalPool_small = Decal.CreateDecalPool("BDArmory/Models/bulletDecal/BulletDecal1");
+                    decalPool_small = Decal.CreateDecalPool("BDArmoryLite/Models/bulletDecal/BulletDecal1");
             }
             else
             {
                 if (decalPool_paint1 == null)
-                    decalPool_paint1 = Decal.CreateDecalPool("BDArmory/Models/bulletDecal/BulletDecal3");
+                    decalPool_paint1 = Decal.CreateDecalPool("BDArmoryLite/Models/bulletDecal/BulletDecal3");
 
                 if (decalPool_paint2 == null)
-                    decalPool_paint2 = Decal.CreateDecalPool("BDArmory/Models/bulletDecal/BulletDecal4");
+                    decalPool_paint2 = Decal.CreateDecalPool("BDArmoryLite/Models/bulletDecal/BulletDecal4");
 
                 if (decalPool_paint3 == null)
-                    decalPool_paint3 = Decal.CreateDecalPool("BDArmory/Models/bulletDecal/BulletDecal5");
+                    decalPool_paint3 = Decal.CreateDecalPool("BDArmoryLite/Models/bulletDecal/BulletDecal5");
 
             }
         }
@@ -178,7 +178,7 @@ namespace BDArmory.FX
         {
             if (bulletHitFXPool == null)
             {
-                var bulletHitFXTemplate = GameDatabase.Instance.GetModel("BDArmory/Models/bulletHit/bulletHit");
+                var bulletHitFXTemplate = GameDatabase.Instance.GetModel("BDArmoryLite/Models/bulletHit/bulletHit");
                 var bFX = bulletHitFXTemplate.AddComponent<BulletHitFX>();
                 bFX.audioSource = bulletHitFXTemplate.AddComponent<AudioSource>();
                 bFX.audioSource.minDistance = 1;
@@ -189,7 +189,7 @@ namespace BDArmory.FX
             }
             if (penetrationFXPool == null)
             {
-                var penetrationFXTemplate = GameDatabase.Instance.GetModel("BDArmory/FX/PenFX");
+                var penetrationFXTemplate = GameDatabase.Instance.GetModel("BDArmoryLite/FX/PenFX");
                 var bFX = penetrationFXTemplate.AddComponent<BulletHitFX>();
                 bFX.audioSource = penetrationFXTemplate.AddComponent<AudioSource>();
                 bFX.audioSource.minDistance = 1;
@@ -200,7 +200,7 @@ namespace BDArmory.FX
             }
             if (flameFXPool == null)
             {
-                var flameTemplate = GameDatabase.Instance.GetModel("BDArmory/FX/FlameEffect2/model");
+                var flameTemplate = GameDatabase.Instance.GetModel("BDArmoryLite/FX/FlameEffect2/model");
                 flameTemplate.AddComponent<DecalEmitterScript>();
                 DecalEmitterScript.shrinkRateFlame = 0.125f;
                 DecalEmitterScript.shrinkRateSmoke = 0.125f;
@@ -325,13 +325,13 @@ namespace BDArmory.FX
             if (audioClips == null)
             {
                 audioClips = new Dictionary<AudioClipType, AudioClip>{
-                    {AudioClipType.Ricochet1, SoundUtils.GetAudioClip("BDArmory/Sounds/ricochet1")},
-                    {AudioClipType.Ricochet2, SoundUtils.GetAudioClip("BDArmory/Sounds/ricochet1")},
-                    {AudioClipType.Ricochet3, SoundUtils.GetAudioClip("BDArmory/Sounds/ricochet3")},
-                    {AudioClipType.BulletHit1, SoundUtils.GetAudioClip("BDArmory/Sounds/bulletHit1")},
-                    {AudioClipType.BulletHit2, SoundUtils.GetAudioClip("BDArmory/Sounds/bulletHit2")},
-                    {AudioClipType.BulletHit3, SoundUtils.GetAudioClip("BDArmory/Sounds/bulletHit3")},
-                    {AudioClipType.Artillery_Shot, SoundUtils.GetAudioClip("BDArmory/Sounds/Artillery_Shot")},
+                    {AudioClipType.Ricochet1, SoundUtils.GetAudioClip("BDArmoryLite/Sounds/ricochet1")},
+                    {AudioClipType.Ricochet2, SoundUtils.GetAudioClip("BDArmoryLite/Sounds/ricochet1")},
+                    {AudioClipType.Ricochet3, SoundUtils.GetAudioClip("BDArmoryLite/Sounds/ricochet3")},
+                    {AudioClipType.BulletHit1, SoundUtils.GetAudioClip("BDArmoryLite/Sounds/bulletHit1")},
+                    {AudioClipType.BulletHit2, SoundUtils.GetAudioClip("BDArmoryLite/Sounds/bulletHit2")},
+                    {AudioClipType.BulletHit3, SoundUtils.GetAudioClip("BDArmoryLite/Sounds/bulletHit3")},
+                    {AudioClipType.Artillery_Shot, SoundUtils.GetAudioClip("BDArmoryLite/Sounds/Artillery_Shot")},
                 };
             }
         }
@@ -466,7 +466,7 @@ namespace BDArmory.FX
             if (BDArmorySettings.BATTLEDAMAGE && BDArmorySettings.BD_TANKS && hitPart.Modules.GetModule<HitpointTracker>().Hitpoints > 0)
             {
                 if (leakFXPool == null)
-                    leakFXPool = FuelLeakFX.CreateLeakFXPool("BDArmory/FX/FuelLeakFX/model");
+                    leakFXPool = FuelLeakFX.CreateLeakFXPool("BDArmoryLite/FX/FuelLeakFX/model");
                 var fuelLeak = leakFXPool.GetPooledObject();
                 var leakFX = fuelLeak.GetComponentInChildren<FuelLeakFX>();
 
@@ -528,7 +528,7 @@ namespace BDArmory.FX
             if (BDArmorySettings.BATTLEDAMAGE && BDArmorySettings.BD_FIRES_ENABLED && hitPart.Modules.GetModule<HitpointTracker>().Hitpoints > 0)
             {
                 if (FireFXPool == null)
-                    FireFXPool = FireFX.CreateFireFXPool("BDArmory/FX/FireFX/model");
+                    FireFXPool = FireFX.CreateFireFXPool("BDArmoryLite/FX/FireFX/model");
                 var fire = FireFXPool.GetPooledObject();
                 var fireFX = fire.GetComponentInChildren<FireFX>();
                 fireFX.burnTime = burntime; //this apparently never got implemented... !?

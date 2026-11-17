@@ -26,7 +26,7 @@ namespace BDArmory.Targeting
                 }
                 else
                 {
-                    reticleTex = GameDatabase.Instance.GetTexture("BDArmory/Textures/camReticle", false);
+                    reticleTex = GameDatabase.Instance.GetTexture("BDArmoryLite/Textures/camReticle", false);
                     return reticleTex;
                 }
             }
@@ -242,7 +242,7 @@ namespace BDArmory.Targeting
             cameras[0] = nearCam;
 
             TGPCameraEffects ge1 = cam1Obj.AddComponent<TGPCameraEffects>();
-            ge1.textureRamp = GameDatabase.Instance.GetTexture("BDArmory/Textures/grayscaleRamp", false);
+            ge1.textureRamp = GameDatabase.Instance.GetTexture("BDArmoryLite/Textures/grayscaleRamp", false);
             ge1.rampOffset = 0;
             camEffects = ge1;
 

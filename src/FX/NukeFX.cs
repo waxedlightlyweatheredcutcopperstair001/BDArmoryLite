@@ -50,9 +50,9 @@ namespace BDArmory.FX
         public string debrisModelPath { get; set; }
         public string blastSoundPath { get; set; }
 
-        public string explModelPath = "BDArmory/Models/explosion/explosion";
+        public string explModelPath = "BDArmoryLite/Models/explosion/explosion";
 
-        public string explSoundPath = "BDArmory/Sounds/explode1";
+        public string explSoundPath = "BDArmoryLite/Sounds/explode1";
 
         Queue<NukeHitEvent> explosionEvents = new Queue<NukeHitEvent>();
         List<NukeHitEvent> explosionEventsPreProcessing = new List<NukeHitEvent>();
@@ -551,7 +551,7 @@ namespace BDArmory.FX
                         templateFX = GameDatabase.Instance.GetModel(ModuleWeapon.defaultExplModelPath);
                     }
                 }
-                else templateFX = GameDatabase.Instance.GetModel("BDArmory/Models/shell/model"); //near enough to invisible; model support pre-FXEmitter spawning of Nuke blast FX is only for chernobyl/mutator support for spawning a bomb model in the delay between initializing the nuke and it detonating
+                else templateFX = GameDatabase.Instance.GetModel("BDArmoryLite/Models/shell/model"); //near enough to invisible; model support pre-FXEmitter spawning of Nuke blast FX is only for chernobyl/mutator support for spawning a bomb model in the delay between initializing the nuke and it detonating
                 var eFx = templateFX.AddComponent<NukeFX>();
                 eFx.audioSource = templateFX.AddComponent<AudioSource>();
                 eFx.audioSource.minDistance = 200;

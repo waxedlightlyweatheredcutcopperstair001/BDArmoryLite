@@ -7,8 +7,8 @@ namespace BDArmory.Settings
 {
     public class BDArmorySettings
     {
-        public static string oldSettingsConfigURL = Path.Combine(KSPUtil.ApplicationRootPath, "GameData/BDArmory/settings.cfg"); // Migrate from the old settings file to the new one in PluginData so that we don't invalidate the ModuleManager cache.
-        public static string settingsConfigURL = Path.GetFullPath(Path.Combine(KSPUtil.ApplicationRootPath, "GameData/BDArmory/PluginData/settings.cfg"));
+        public static string oldSettingsConfigURL = Path.Combine(KSPUtil.ApplicationRootPath, "GameData/BDArmoryLite/settings.cfg"); // Migrate from the old settings file to the new one in PluginData so that we don't invalidate the ModuleManager cache.
+        public static string settingsConfigURL = Path.GetFullPath(Path.Combine(KSPUtil.ApplicationRootPath, "GameData/BDArmoryLite/PluginData/settings.cfg"));
         public static bool ready = false;
 
         #region Settings section toggles
@@ -51,8 +51,6 @@ namespace BDArmory.Settings
         [BDAPersistentSettingsField] public static bool RESET_HP = false;                         // Automatically reset HP of parts of vessels when they're spawned in flight mode.
         [BDAPersistentSettingsField] public static bool RESET_ARMOUR = false;                     // Automatically reset Armor material of parts of vessels when they're spawned in flight mode.
         [BDAPersistentSettingsField] public static bool RESET_HULL = false;                     // Automatically reset hull material of parts of vessels when they're spawned in flight mode.
-        [BDAPersistentSettingsField] public static bool AUTOCATEGORIZE_PARTS = true;
-        [BDAPersistentSettingsField] public static bool SHOW_CATEGORIES = true;
         [BDAPersistentSettingsField] public static bool VEFX_HIDE_BDA_EXPLOSIONS = true;      // Hide BDArmory's explosion visuals when Volumetric Explosion FX is drawing its own.
         [BDAPersistentSettingsField] public static bool IGNORE_TERRAIN_CHECK = false;
         //[BDAPersistentSettingsField] public static bool ADVANCED_EDIT = true;                     //Used for debug fields not nomrally shown to regular users //SI - Only usage is a commented out function in BDExplosivePart

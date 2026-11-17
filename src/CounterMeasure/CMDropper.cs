@@ -213,7 +213,7 @@ namespace BDArmory.CounterMeasure
             {
                 case "flare":
                     cmType = CountermeasureTypes.Flare;
-                    cmSound = SoundUtils.GetAudioClip("BDArmory/Sounds/flareSound");
+                    cmSound = SoundUtils.GetAudioClip("BDArmoryLite/Sounds/flareSound");
                     if (!flarePool)
                     {
                         SetupFlarePool();
@@ -223,7 +223,7 @@ namespace BDArmory.CounterMeasure
 
                 case "chaff":
                     cmType = CountermeasureTypes.Chaff;
-                    cmSound = SoundUtils.GetAudioClip("BDArmory/Sounds/smokeEject");
+                    cmSound = SoundUtils.GetAudioClip("BDArmoryLite/Sounds/smokeEject");
                     resourceName = "CMChaff";
                     vci = vessel.gameObject.GetComponent<VesselChaffInfo>();
                     if (!vci)
@@ -238,8 +238,8 @@ namespace BDArmory.CounterMeasure
 
                 case "smoke":
                     cmType = CountermeasureTypes.Smoke;
-                    cmSound = SoundUtils.GetAudioClip("BDArmory/Sounds/smokeEject");
-                    smokePoofSound = SoundUtils.GetAudioClip("BDArmory/Sounds/smokePoof");
+                    cmSound = SoundUtils.GetAudioClip("BDArmoryLite/Sounds/smokeEject");
+                    smokePoofSound = SoundUtils.GetAudioClip("BDArmoryLite/Sounds/smokePoof");
                     resourceName = "CMSmoke";
                     if (smokePool == null)
                     {
@@ -249,7 +249,7 @@ namespace BDArmory.CounterMeasure
 
                 case "decoy":
                     cmType = CountermeasureTypes.Decoy;
-                    cmSound = SoundUtils.GetAudioClip("BDArmory/Sounds/decoySound");
+                    cmSound = SoundUtils.GetAudioClip("BDArmoryLite/Sounds/decoySound");
                     if (!decoyPool)
                     {
                         SetupDecoyPool();
@@ -259,7 +259,7 @@ namespace BDArmory.CounterMeasure
 
                 case "bubble":
                     cmType = CountermeasureTypes.Bubbles;
-                    cmSound = SoundUtils.GetAudioClip("BDArmory/Sounds/smokeEject");
+                    cmSound = SoundUtils.GetAudioClip("BDArmoryLite/Sounds/smokeEject");
                     resourceName = "CMBubbleCurtain";
                     if (!bubblePool)
                     {
@@ -426,7 +426,7 @@ namespace BDArmory.CounterMeasure
 
         void SetupFlarePool()
         {
-            GameObject cm = GameDatabase.Instance.GetModel("BDArmory/Models/CMFlare/model");
+            GameObject cm = GameDatabase.Instance.GetModel("BDArmoryLite/Models/CMFlare/model");
             cm.SetActive(false);
             cm.AddComponent<CMFlare>();
             flarePool = ObjectPool.CreateObjectPool(cm, 10, true, true);
@@ -434,7 +434,7 @@ namespace BDArmory.CounterMeasure
 
         void SetupSmokePool()
         {
-            GameObject cm = GameDatabase.Instance.GetModel("BDArmory/Models/CMSmoke/cmSmokeModel");
+            GameObject cm = GameDatabase.Instance.GetModel("BDArmoryLite/Models/CMSmoke/cmSmokeModel");
             cm.SetActive(false);
             cm.AddComponent<CMSmoke>();
             smokePool = ObjectPool.CreateObjectPool(cm, 10, true, true);
@@ -442,7 +442,7 @@ namespace BDArmory.CounterMeasure
 
         void SetupChaffPool()
         {
-            GameObject cm = GameDatabase.Instance.GetModel("BDArmory/Models/CMChaff/model");
+            GameObject cm = GameDatabase.Instance.GetModel("BDArmoryLite/Models/CMChaff/model");
             cm.SetActive(false);
             cm.AddComponent<CMChaff>();
             chaffPool = ObjectPool.CreateObjectPool(cm, 10, true, true);
@@ -450,7 +450,7 @@ namespace BDArmory.CounterMeasure
 
         void SetupDecoyPool()
         {
-            GameObject cm = GameDatabase.Instance.GetModel("BDArmory/Models/CMDecoy/model");
+            GameObject cm = GameDatabase.Instance.GetModel("BDArmoryLite/Models/CMDecoy/model");
             cm.SetActive(false);
             cm.AddComponent<CMDecoy>();
             decoyPool = ObjectPool.CreateObjectPool(cm, 10, true, true);
@@ -458,7 +458,7 @@ namespace BDArmory.CounterMeasure
 
         void SetupBubblePool()
         {
-            GameObject cm = GameDatabase.Instance.GetModel("BDArmory/Models/CMBubble/cmSmokeModel");
+            GameObject cm = GameDatabase.Instance.GetModel("BDArmoryLite/Models/CMBubble/cmSmokeModel");
             cm.SetActive(false);
             cm.AddComponent<CMBubble>();
             bubblePool = ObjectPool.CreateObjectPool(cm, 10, true, true);

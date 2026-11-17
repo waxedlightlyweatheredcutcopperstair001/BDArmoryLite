@@ -919,7 +919,7 @@ namespace BDArmory.Bullets
                     pBullet.sourceWeapon = sourceWeapon;
                     pBullet.sourceVessel = sourceVessel;
                     pBullet.team = team;
-                    pBullet.bulletTexturePath = "BDArmory/Textures/bullet";
+                    pBullet.bulletTexturePath = "BDArmoryLite/Textures/bullet";
                     pBullet.projectileColor = GUIUtils.ParseColor255(sBullet.projectileColor);
                     pBullet.startColor = GUIUtils.ParseColor255(sBullet.startColor);
                     pBullet.fadeColor = sBullet.fadeColor;

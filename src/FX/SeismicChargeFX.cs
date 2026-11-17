@@ -33,7 +33,7 @@ namespace BDArmory.FX
             audioSource.pitch = UnityEngine.Random.Range(0.93f, 1f);
             audioSource.volume = BDAMath.Sqrt(originalShipVolume);
 
-            audioSource.PlayOneShot(SoundUtils.GetAudioClip("BDArmory/Sounds/seismicCharge"));
+            audioSource.PlayOneShot(SoundUtils.GetAudioClip("BDArmoryLite/Sounds/seismicCharge"));
 
             rb = gameObject.AddComponent<Rigidbody>();
             rb.useGravity = false;
@@ -109,7 +109,7 @@ namespace BDArmory.FX
 
         public static void CreateSeismicExplosion(Vector3 pos, Quaternion rot)
         {
-            GameObject explosionModel = GameDatabase.Instance.GetModel("BDArmory/Models/seismicCharge/seismicExplosion");
+            GameObject explosionModel = GameDatabase.Instance.GetModel("BDArmoryLite/Models/seismicCharge/seismicExplosion");
             GameObject explosionObject = (GameObject)Instantiate(explosionModel, pos, rot);
             explosionObject.SetActive(true);
             explosionObject.AddComponent<SeismicChargeFX>();

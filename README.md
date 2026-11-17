@@ -1,7 +1,7 @@
 # BDArmory Lite: source and build
 
-Player-facing documentation is in `tools/overlay/BDArmory/README.md` (it ships as
-`GameData/BDArmory/README.md`).
+Player-facing documentation is in `tools/overlay/BDArmoryLite/README.md` (it ships as
+`GameData/BDArmoryLite/README.md`).
 
 ## Layout
 
@@ -9,11 +9,12 @@ Player-facing documentation is in `tools/overlay/BDArmory/README.md` (it ships a
 |---|---|
 | `src/` | C# source (from BDArmory Continued 1.6.11, tag `v1.6.11.0`, trimmed and modified) |
 | `build.sh` | Builds `build/BDArmory.dll` |
-| `tools/package.py` | Assembles `GameData/BDArmory` (NKDR in `BDArmory/NKDR`) from the original BDArmory + NKDR download and the DLL |
+| `tools/package.py` | Assembles `GameData/BDArmoryLite` (NKDR in `BDArmoryLite/NKDR`) from the original BDArmory + NKDR download and the DLL |
 | `tools/validate.py` | Static checks on the package (asset paths, part modules, bullets, ammo, models) |
 | `tools/overlay/` | Hand-written files copied over the package (README) |
 | `tools/rep.py`, `tools/cutblock.py`, `tools/errs.sh` | Editing/build helpers used during the port |
-| `GameData/BDArmory/` | The finished mod (generated: don't edit by hand) |
+| `tools/categorize.py` | Assigns each weapon part its editor subcategory (VAB Organizer) |
+| `GameData/BDArmoryLite/` | The finished mod (generated: don't edit by hand) |
 | `Extras/Ships/SPH/` | NKDR sample craft (copy into a save's `Ships/SPH`) |
 
 ## Build
@@ -31,13 +32,22 @@ python3 -I tools/validate.py
 The assembly is still named `BDArmory` and keeps BDArmory's namespaces, module names and config
 fields, so NKDR-style part configs, other mods' `:NEEDS[BDArmory]` patches and Volumetric Explosion
 FX (which reflects on `BDArmory.FX.ExplosionFx`, `NukeFX`, `BulletHitFX`, `FXEmitter`,
-`Utils.ObjectPool`, `BDExplosivePart.tntMass`, `BDModuleNuke.yield`, ...) keep working. It also installs
-to `GameData/BDArmory`, so `BDArmory/...` asset paths used by add-ons (e.g. TURD texture sets) resolve.
-NKDR's `NKDR/...` paths are rewritten to `BDArmory/NKDR/...`.
+`Utils.ObjectPool`, `BDExplosivePart.tntMass`, `BDModuleNuke.yield`, ...) keep working. Asset paths
+are rewritten from `BDArmory/...` and `NKDR/...` to `BDArmoryLite/...` and `BDArmoryLite/NKDR/...` (so add-ons
+that reference BDArmory's files by path, e.g. TURD's default texture sets, won't find them).
+
+Editor categories: `tools/package.py` writes `bdacategory`, `category = Utility` (for parts that were in
+`none`/Structural) and a `VABORGANIZER { organizerSubcategory = bda... }` block on every weapon part, and
+generates `VABOrganizerSubcategories.cfg`. `UI/BDAEditorCategory.cs` only adds the Armory filter button.
 
 `FX/VolumetricExplosionFXBridge.cs` hides BDArmory's explosion renderers and lights when Volumetric
 Explosion FX is installed and replacing visuals (read from its settings), keeping sound, damage and
 the pooled explosion objects it watches.
+
+## Version history
+
+The git repository keeps every version (tags `v1.1.0`, `v1.2.0`, ...). GameData is tracked too, so each
+version is complete without the original BDArmory/NKDR download.
 
 ## Main changes from upstream
 

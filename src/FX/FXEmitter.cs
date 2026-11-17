@@ -27,8 +27,8 @@ namespace BDArmory.FX
         public float TimeIndex => Time.time - StartTime;
 
         private bool disabled = true;
-        public static string defaultModelPath = "BDArmory/Models/explosion/explosion";
-        public static string defaultSoundPath = "BDArmory/Sounds/explode1";
+        public static string defaultModelPath = "BDArmoryLite/Models/explosion/explosion";
+        public static string defaultSoundPath = "BDArmoryLite/Sounds/explode1";
         private float particlesMaxEnergy;
         private float maxEnergy;
         private void OnEnable()

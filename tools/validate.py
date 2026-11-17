@@ -1,6 +1,6 @@
 """Static checks on the packaged mod. Usage: python3 -I tools/validate.py
 
-1. Every asset path (BDArmory/...) in configs and in the DLL's string literals points at a file that exists.
+1. Every asset path (BDArmoryLite/...) in configs and in the DLL's string literals points at a file that exists.
 2. Every part MODULE name is defined in BDArmory.dll or KSP's Assembly-CSharp (or a known optional mod).
 3. Every bulletType / rocketType / ammo resource referenced by a weapon is defined.
 4. Every part's mesh / MODEL file exists.
@@ -9,15 +9,15 @@ import os, re, sys, subprocess
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 GD = os.path.join(ROOT, 'GameData')
-MOD = os.path.join(GD, 'BDArmory')
+MOD = os.path.join(GD, 'BDArmoryLite')
 SCRATCH_META = os.environ.get('CLRMETA')  # optional path to clrmeta.py for module checks
 MANAGED = os.environ.get('KSPManaged', os.path.join(os.path.dirname(ROOT), 'Managed-20261117T003226Z-1-001', 'Managed'))
 ASSET_EXT = ['.mu', '.png', '.dds', '.tga', '.jpg', '.mbm', '.truecolor', '.wav', '.ogg', '.mp3', '.bundle', '']
 OPTIONAL_MODULES = {'TweakScale', 'FSanimateGeneric', 'ModuleB9PartSwitch', 'FSfuelSwitch', 'ModuleWaterfallFX'}  # handled by other mods if installed
 
 # Referenced by BDArmory 1.6.11's code but never shipped in its release either (unused or optional features).
-UPSTREAM_MISSING = {'BDArmory/Models/seismicCharge/seismicExplosion', 'BDArmory/Sounds/seismicCharge',
-                    'BDArmory/Sounds/decoySound', 'BDArmory/Textures/grayCircle', 'BDArmory/Particles/Bullet'}
+UPSTREAM_MISSING = {'BDArmoryLite/Models/seismicCharge/seismicExplosion', 'BDArmoryLite/Sounds/seismicCharge',
+                    'BDArmoryLite/Sounds/decoySound', 'BDArmoryLite/Textures/grayCircle'}
 
 problems = []
 files_lower = {}
@@ -44,7 +44,7 @@ cfgs = [os.path.join(d, f) for d, _, fs in os.walk(MOD) for f in fs if f.endswit
 texts = {p: read(p) for p in cfgs}
 
 # 1. Asset paths in configs
-path_re = re.compile(r'(?<![\w/])BDArmory/[^\s,;"\'}]+')
+path_re = re.compile(r'BDArmoryLite/[^\s,;"\'}]+')
 for p, t in texts.items():
     for line in t.split('\n'):
         code = line.split('//')[0]
@@ -56,8 +56,8 @@ for p, t in texts.items():
 # 1b. Asset paths in the DLL (UTF-16 string literals)
 dll = os.path.join(MOD, 'Plugins', 'BDArmory.dll')
 raw = open(dll, 'rb').read()
-for m in re.finditer(rb'B\x00D\x00A\x00r\x00m\x00o\x00r\x00y\x00/\x00((?:[\x20-\x7e]\x00)+)', raw):
-    url = 'BDArmory/' + m.group(1).decode('utf-16-le')
+for m in re.finditer(rb'B\x00D\x00A\x00r\x00m\x00o\x00r\x00y\x00L\x00i\x00t\x00e\x00/\x00((?:[\x20-\x7e]\x00)+)', raw):
+    url = 'BDArmoryLite/' + m.group(1).decode('utf-16-le')
     if url.endswith('/') or url.endswith('.cfg') or '{' in url:
         continue  # directories, settings files and format strings
     if url in UPSTREAM_MISSING:

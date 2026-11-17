@@ -112,10 +112,10 @@ namespace BDArmory.Weapons
         public float apMod = 1;
 
         [KSPField]
-        public string explModelPath = "BDArmory/Models/explosion/explosion";
+        public string explModelPath = "BDArmoryLite/Models/explosion/explosion";
 
         [KSPField]
-        public string explSoundPath = "BDArmory/Sounds/explode1";
+        public string explSoundPath = "BDArmoryLite/Sounds/explode1";
 
         /// <summary>Contact fuze set by the Arm action; survives save/load. See WarheadFuze.</summary>
         [KSPField(isPersistant = true)]

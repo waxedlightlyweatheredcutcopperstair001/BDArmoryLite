@@ -196,7 +196,7 @@ namespace BDArmory.Damage
                 }
             }
 
-            var empFX = Instantiate(GameDatabase.Instance.GetModel("BDArmory/FX/Electroshock"),
+            var empFX = Instantiate(GameDatabase.Instance.GetModel("BDArmoryLite/FX/Electroshock"),
                     vessel.rootPart.transform.position, Quaternion.identity);
 
             empFX.SetActive(true);

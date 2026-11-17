@@ -40,7 +40,7 @@ namespace BDArmory.UI
 
         public SortedList<string, List<MissileFire>> weaponManagers = new SortedList<string, List<MissileFire>>();
 
-        public static string textureDir = "BDArmory/Textures/";
+        public static string textureDir = "BDArmoryLite/Textures/";
 
         //legacy version check
         bool LegacyTILoaded = false;

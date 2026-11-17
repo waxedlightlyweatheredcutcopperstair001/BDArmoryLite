@@ -696,13 +696,13 @@ namespace BDArmory.Weapons
         int tracerIntervalCounter;
 
         [KSPField]
-        public string bulletTexturePath = "BDArmory/Textures/bullet";
+        public string bulletTexturePath = "BDArmoryLite/Textures/bullet";
 
         [KSPField]
-        public string smokeTexturePath = ""; //"BDArmory/Textures/tracerSmoke";
+        public string smokeTexturePath = ""; //"BDArmoryLite/Textures/tracerSmoke";
 
         [KSPField]
-        public string laserTexturePath = "BDArmory/Textures/laser";
+        public string laserTexturePath = "BDArmoryLite/Textures/laser";
 
         public List<string> laserTexList;
 
@@ -720,11 +720,11 @@ namespace BDArmory.Weapons
         public float heatLoss = 250;
 
         //canon explosion effects
-        public static string defaultExplModelPath = "BDArmory/Models/explosion/explosion";
+        public static string defaultExplModelPath = "BDArmoryLite/Models/explosion/explosion";
         [KSPField]
         public string explModelPath = defaultExplModelPath;
 
-        public static string defaultExplSoundPath = "BDArmory/Sounds/explode1";
+        public static string defaultExplSoundPath = "BDArmoryLite/Sounds/explode1";
         [KSPField]
         public string explSoundPath = defaultExplSoundPath;
 
@@ -736,16 +736,16 @@ namespace BDArmory.Weapons
 
         //audioclip paths
         [KSPField]
-        public string fireSoundPath = "BDArmory/Parts/50CalTurret/sounds/shot";
+        public string fireSoundPath = "BDArmoryLite/Parts/50CalTurret/sounds/shot";
 
         [KSPField]
-        public string overheatSoundPath = "BDArmory/Parts/50CalTurret/sounds/turretOverheat";
+        public string overheatSoundPath = "BDArmoryLite/Parts/50CalTurret/sounds/turretOverheat";
 
         [KSPField]
-        public string chargeSoundPath = "BDArmory/Parts/ABL/sounds/charge";
+        public string chargeSoundPath = "BDArmoryLite/Parts/ABL/sounds/charge";
 
         [KSPField]
-        public string rocketSoundPath = "BDArmory/Sounds/rocketLoop";
+        public string rocketSoundPath = "BDArmoryLite/Sounds/rocketLoop";
 
         //audio
         [KSPField]
@@ -2505,7 +2505,7 @@ namespace BDArmory.Weapons
                                 if (instagib)
                                 {
                                     p.AddInstagibDamage();
-                                    ExplosionFx.CreateExplosion(hit.point, 1, "BDArmory/Models/explosion/explosion", explSoundPath, ExplosionSourceType.Bullet, 0, null, vessel.vesselName, null, Hitpart: p);
+                                    ExplosionFx.CreateExplosion(hit.point, 1, "BDArmoryLite/Models/explosion/explosion", explSoundPath, ExplosionSourceType.Bullet, 0, null, vessel.vesselName, null, Hitpart: p);
                                 }
                                 else
                                 {
@@ -5726,7 +5726,7 @@ namespace BDArmory.Weapons
 
         void SetupShellPool()
         {
-            GameObject templateShell = GameDatabase.Instance.GetModel("BDArmory/Models/shell/model");
+            GameObject templateShell = GameDatabase.Instance.GetModel("BDArmoryLite/Models/shell/model");
             templateShell.SetActive(false);
             templateShell.AddComponent<ShellCasing>();
             shellPool = ObjectPool.CreateObjectPool(templateShell, 50, true, true);

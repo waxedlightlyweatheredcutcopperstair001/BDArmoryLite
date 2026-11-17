@@ -308,7 +308,7 @@ namespace BDArmory.Control
         bool unguidedWeapon = false;
         Part bombPart;
         public Vector3 bombAimerPosition = Vector3.zero;
-        Texture2D bombAimerTexture = GameDatabase.Instance.GetTexture("BDArmory/Textures/grayCircle", false);
+        Texture2D bombAimerTexture = GameDatabase.Instance.GetTexture("BDArmoryLite/Textures/grayCircle", false);
         bool showBombAimer;
 
         //targeting
@@ -1177,11 +1177,11 @@ UI_FloatRange(minValue = 0.1f, maxValue = 10f, stepIncrement = 0.1f, scene = UI_
 
         public override void OnAwake()
         {
-            clickSound = SoundUtils.GetAudioClip("BDArmory/Sounds/click");
-            warningSound = SoundUtils.GetAudioClip("BDArmory/Sounds/warning");
-            armOnSound = SoundUtils.GetAudioClip("BDArmory/Sounds/armOn");
-            armOffSound = SoundUtils.GetAudioClip("BDArmory/Sounds/armOff");
-            heatGrowlSound = SoundUtils.GetAudioClip("BDArmory/Sounds/heatGrowl");
+            clickSound = SoundUtils.GetAudioClip("BDArmoryLite/Sounds/click");
+            warningSound = SoundUtils.GetAudioClip("BDArmoryLite/Sounds/warning");
+            armOnSound = SoundUtils.GetAudioClip("BDArmoryLite/Sounds/armOn");
+            armOffSound = SoundUtils.GetAudioClip("BDArmoryLite/Sounds/armOff");
+            heatGrowlSound = SoundUtils.GetAudioClip("BDArmoryLite/Sounds/heatGrowl");
 
             //HEAT LOCKING
             heatTarget = TargetSignatureData.noTarget;
