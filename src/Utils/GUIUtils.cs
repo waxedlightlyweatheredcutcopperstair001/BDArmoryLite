@@ -330,6 +330,25 @@ namespace BDArmory.Utils
             return false;
         }
 
+        /// <summary>For diagnostics: which BDArmory GUI area (if any) the mouse is over, as _CheckMouseIsOnGui sees it.</summary>
+        public static string DescribeMouseGuiHit()
+        {
+            Vector3 p = new Vector3(Input.mousePosition.x, Screen.height - Input.mousePosition.y, 0);
+            if (MouseIsInRect(new Rect(0, 0, Screen.width, 65), p)) return "top-of-screen strip (65px)";
+            if (BDArmorySetup.windowBDAToolBarEnabled && MouseIsInRect(BDArmorySetup.WindowRectToolbar, p)) return $"weapon manager window {BDArmorySetup.WindowRectToolbar}";
+            if (ModuleTargetingCamera.windowIsOpen && MouseIsInRect(BDArmorySetup.WindowRectTargetingCam, p)) return $"targeting camera window {BDArmorySetup.WindowRectTargetingCam}";
+            var wm = BDArmorySetup.Instance != null ? BDArmorySetup.Instance.ActiveWeaponManager : null;
+            if (wm != null)
+            {
+                if (wm.vesselRadarData && wm.vesselRadarData.guiEnabled && MouseIsInRect(BDArmorySetup.WindowRectRadar, p)) return $"radar window {BDArmorySetup.WindowRectRadar}";
+                if (wm.rwr && wm.rwr.rwrEnabled && wm.rwr.displayRWR && MouseIsInRect(BDArmorySetup.WindowRectRwr, p)) return $"RWR window {BDArmorySetup.WindowRectRwr}";
+            }
+            if (extraGUIRects != null)
+                foreach (var kvp in extraGUIRects)
+                    if (kvp.Value.visible && MouseIsInRect(kvp.Value.rect, p)) return $"extra window #{kvp.Key} {kvp.Value.rect}";
+            return "none";
+        }
+
         public static void ResizeGuiWindow(Rect windowrect, Vector2 mousePos)
         {
             GUIUtilsInstance.Reset();

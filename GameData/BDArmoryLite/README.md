@@ -1,4 +1,4 @@
-# BDArmory Lite 1.2.0
+# BDArmory Lite 1.2.1
 
 A streamlined BDArmory for KSP 1.12.x: guns, missiles, bombs, radar, targeting, countermeasures,
 armour plates and the weapon manager, with the North Kerbin Dynamics Renewed (NKDR) weapons

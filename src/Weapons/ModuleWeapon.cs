@@ -1797,6 +1797,8 @@ namespace BDArmory.Weapons
 
         void Update()
         {
+            if (BDArmorySettings.DEBUG_WEAPONS && HighLogic.LoadedSceneIsFlight && vessel != null && vessel.isActiveVessel && BDInputUtils.GetKeyDown(BDInputSettingsFields.WEAP_FIRE_KEY))
+                LogTriggerDiagnostics();
             if (HighLogic.LoadedSceneIsFlight && FlightGlobals.ready && !vessel.packed && vessel.IsControllable)
             {
                 if (lowpassFilter)
@@ -3288,6 +3290,28 @@ namespace BDArmory.Weapons
         #endregion WeaponUtilities
         //misc. like check weaponmgr
         #region WeaponSetup
+        /// <summary>
+        /// One log line per weapon when the fire key is pressed (with "Log: guns, rockets and lasers" on), listing every
+        /// condition that can stop manual firing. Used to find conflicts with other mods.
+        /// </summary>
+        void LogTriggerDiagnostics()
+        {
+            try
+            {
+                var wm = weaponManager;
+                string turretState = turret == null ? "n/a" : (turret.TargetInRange(finalAimTarget, 10, float.MaxValue) ? "on target" : "NOT on target");
+                string locks = InputLockManager.lockStack.Count == 0 ? "none" : string.Join(", ", InputLockManager.lockStack.Keys);
+                Debug.Log($"[BDArmory.ModuleWeapon]: Fire key pressed. {OriginalShortName} ({part.partInfo.name}) on {vessel.vesselName}: " +
+                    $"state={weaponState}, weaponManager={(wm == null ? "NONE" : (wm.isArmed ? "armed" : "SAFE") + (wm.guardMode ? "+guard" : "") + ", selected=" + (wm.selectedWeapon != null ? wm.selectedWeapon.GetShortName() : "none"))}, " +
+                    $"fireKey='{BDInputSettingsFields.WEAP_FIRE_KEY.inputString}', mouseOverBDAWindow={GUIUtils.CheckMouseIsOnGui()} [{GUIUtils.DescribeMouseGuiHit()}] (mouse {Input.mousePosition.x:F0},{Input.mousePosition.y:F0} of {Screen.width}x{Screen.height}), " +
+                    $"controllable={vessel.IsControllable}, packed={vessel.packed}, mapView={MapView.MapIsEnabled}, paused={BDArmorySetup.GameIsPaused}, warp={TimeWarp.CurrentRate}, aiControlled={aiControlled}, " +
+                    $"turret={turretState}, pointingAtSelf={pointingAtSelf}, fireTransforms={(fireTransforms == null ? 0 : fireTransforms.Length)}, overheated={isOverheated}, reloading={isReloading}, authorized={WMgrAuthorized()}, " +
+                    $"mouseAimFlight={ModIntegration.MouseAimFlight.IsMouseAimActive}, camera={(FlightCamera.fetch != null && FlightCamera.fetch.mainCamera != null ? FlightCamera.fetch.mainCamera.name : "none")}/{(Camera.main != null ? Camera.main.name : "none")}, " +
+                    $"controlLocks=[{locks}]");
+            }
+            catch (Exception e) { Debug.LogWarning($"[BDArmory.ModuleWeapon]: Trigger diagnostics failed: {e.Message}"); }
+        }
+
         bool WMgrAuthorized()
         {
             MissileFire manager = BDArmorySetup.Instance.ActiveWeaponManager;

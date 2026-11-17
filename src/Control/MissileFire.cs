@@ -1390,6 +1390,8 @@ UI_FloatRange(minValue = 0.1f, maxValue = 10f, stepIncrement = 0.1f, scene = UI_
 
             UpdateTargetingAudio();
 
+            if (BDArmorySettings.DEBUG_WEAPONS && vessel.isActiveVessel && BDInputUtils.GetKeyDown(BDInputSettingsFields.WEAP_FIRE_KEY))
+                Debug.Log($"[BDArmory.MissileFire]: Fire key pressed on {vessel.vesselName}: armed={isArmed}, guardMode={guardMode}, selected={(selectedWeapon != null ? selectedWeapon.GetShortName() + " (" + selectedWeapon.GetWeaponClass() + ")" : "none")}, mouseOverBDAWindow={CheckMouseIsOnGui()} [{GUIUtils.DescribeMouseGuiHit()}], triggerHoldTime={BDArmorySettings.TRIGGER_HOLD_TIME}s, uiScale={BDArmorySettings.UI_SCALE}, controlLocks=[{(InputLockManager.lockStack.Count == 0 ? "none" : string.Join(", ", InputLockManager.lockStack.Keys))}]");
             if (vessel.isActiveVessel && !guardMode) // Manual firing.
             {
                 bool missileTriggerHeld = false;
