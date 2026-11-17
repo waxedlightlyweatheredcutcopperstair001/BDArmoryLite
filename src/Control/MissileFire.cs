@@ -3227,21 +3227,49 @@ UI_FloatRange(minValue = 0.1f, maxValue = 10f, stepIncrement = 0.1f, scene = UI_
             return true;
         }
 
+        bool loggedMissileTrigger = false;
+
+        /// <summary>
+        /// One log line when the fire key has been held long enough to launch a missile or bomb (with "Log: missiles and bombs"
+        /// on), listing everything that can stop the launch. Used to find conflicts with other mods.
+        /// </summary>
+        void LogMissileTriggerDiagnostics()
+        {
+            try
+            {
+                var ml = CurrentMissile as MissileLauncher;
+                string missile = CurrentMissile == null ? "NONE" :
+                    $"{CurrentMissile.GetShortName()} ({CurrentMissile.part.partInfo.name}), launched={CurrentMissile.launched}, hasFired={CurrentMissile.HasFired}, " +
+                    $"class={CurrentMissile.GetWeaponClass()}, dropTime={CurrentMissile.dropTime}, shieldedFromAirstream={CurrentMissile.part.ShieldedFromAirstream}, " +
+                    $"attachedTo={(CurrentMissile.part.parent != null ? CurrentMissile.part.parent.partInfo.name : "nothing")}" +
+                    (ml != null ? $", turret={(ml.missileTurret != null ? (ml.missileTurret.turretEnabled ? "enabled" : "DISABLED") : "none")}, rotaryRail={(ml.rotaryRail != null)}, deployableRail={(ml.deployableRail != null)}, reloadableRail={(ml.reloadableRail != null)}" : "");
+                bool clearance = CurrentMissile == null || CheckBombClearance(CurrentMissile);
+                Debug.Log($"[BDArmory.MissileFire]: Missile trigger held {triggerTimer:F2}s on {vessel.vesselName}: armed={isArmed}, guardMode={guardMode}, weaponIndex={weaponIndex}, " +
+                    $"selected={(selectedWeapon != null ? selectedWeapon.GetShortName() + " (" + selectedWeapon.GetWeaponClass() + ")" : "none")}, alreadyFiredThisPress={hasSingleFired}, rippleFire={rippleFire}, mapView={MapView.MapIsEnabled}, " +
+                    $"clearanceCheck={(BDArmorySettings.BOMB_CLEARANCE_CHECK ? (clearance ? "clear" : "BLOCKED (see RAYCAST HIT line above)") : "off")}, missile: {missile}");
+            }
+            catch (Exception e) { Debug.LogWarning($"[BDArmory.MissileFire]: Missile trigger diagnostics failed: {e.Message}"); }
+        }
+
         void FireMissile()
         {
             if (weaponIndex == 0)
             {
+                if (BDArmorySettings.DEBUG_MISSILES) Debug.Log("[BDArmory.MissileFire]: Not firing: no weapon selected (weaponIndex 0).");
                 return;
             }
 
             if (selectedWeapon == null)
             {
+                if (BDArmorySettings.DEBUG_MISSILES) Debug.Log("[BDArmory.MissileFire]: Not firing: selected weapon is null.");
                 return;
             }
             if (guardMode && (firedMissiles >= maxMissilesOnTarget))
             {
                 return;
             }
+            if (BDArmorySettings.DEBUG_MISSILES && CurrentMissile == null && (selectedWeapon.GetWeaponClass() == WeaponClasses.Missile || selectedWeapon.GetWeaponClass() == WeaponClasses.SLW || selectedWeapon.GetWeaponClass() == WeaponClasses.Bomb))
+                Debug.Log($"[BDArmory.MissileFire]: Not firing: no missile part found for the selected weapon {selectedWeapon.GetShortName()}.");
             if (selectedWeapon.GetWeaponClass() == WeaponClasses.Missile ||
                 selectedWeapon.GetWeaponClass() == WeaponClasses.SLW ||
                 selectedWeapon.GetWeaponClass() == WeaponClasses.Bomb)
@@ -3256,6 +3284,15 @@ UI_FloatRange(minValue = 0.1f, maxValue = 10f, stepIncrement = 0.1f, scene = UI_
         /// </summary>
         void FireMissileManually(bool mainTrigger)
         {
+            if (BDArmorySettings.DEBUG_MISSILES && vessel.isActiveVessel)
+            {
+                if (triggerTimer == 0) loggedMissileTrigger = false;
+                else if (!loggedMissileTrigger && triggerTimer > BDArmorySettings.TRIGGER_HOLD_TIME)
+                {
+                    loggedMissileTrigger = true;
+                    LogMissileTriggerDiagnostics();
+                }
+            }
             if (!MapView.MapIsEnabled && !hasSingleFired && ((mainTrigger && triggerTimer > BDArmorySettings.TRIGGER_HOLD_TIME) || !mainTrigger))
             {
                 if (rippleFire)
@@ -4076,12 +4113,21 @@ UI_FloatRange(minValue = 0.1f, maxValue = 10f, stepIncrement = 0.1f, scene = UI_
             return null;
         }
 
+        /// <summary>For diagnostics: what a clearance raycast hit (including colliders that don't belong to any part, e.g. other mods' objects).</summary>
+        static string DescribeClearanceHit(RaycastHit hit, Part p)
+        {
+            var go = hit.collider != null ? hit.collider.gameObject : null;
+            return $"part={(p != null ? p.partInfo.name + (p.vessel != null ? " on " + p.vessel.vesselName : "") : "none")}, collider='{(go != null ? go.name : "?")}' " +
+                $"(layer {(go != null ? UnityEngine.LayerMask.LayerToName(go.layer) + "/" + go.layer : "?")}, root '{(go != null ? go.transform.root.name : "?")}', trigger={(hit.collider != null && hit.collider.isTrigger)}), distance={hit.distance:F1}m";
+        }
+
         bool CheckBombClearance(MissileBase ml)
         {
             if (!BDArmorySettings.BOMB_CLEARANCE_CHECK) return true;
 
             if (ml.part.ShieldedFromAirstream)
             {
+                if (BDArmorySettings.DEBUG_MISSILES) Debug.Log($"[BDArmory.MissileFire]: Clearance is FALSE: {ml.GetShortName()} is shielded from the airstream (in a cargo bay or fairing).");
                 return false;
             }
 
@@ -4165,8 +4211,7 @@ UI_FloatRange(minValue = 0.1f, maxValue = 10f, stepIncrement = 0.1f, scene = UI_
                                     Part p = t.Current.collider.GetComponentInParent<Part>();
 
                                     if ((p == null || p == ml.part) && p != null) continue;
-                                    if (BDArmorySettings.DEBUG_MISSILES)
-                                        Debug.Log($"[BDArmory.MissileFire]: RAYCAST HIT, clearance is FALSE! part={(p != null ? p.name : null)}, collider+{(p != null ? p.collider : null)}");
+                                    if (BDArmorySettings.DEBUG_MISSILES) Debug.Log($"[BDArmory.MissileFire]: RAYCAST HIT, clearance is FALSE (launch path)! {DescribeClearanceHit(t.Current, p)}");
                                     return false;
                                 }
                         }
@@ -4186,8 +4231,7 @@ UI_FloatRange(minValue = 0.1f, maxValue = 10f, stepIncrement = 0.1f, scene = UI_
                         {
                             Part p = t.Current.collider.GetComponentInParent<Part>();
                             if ((p == null || p == ml.part) && p != null) continue;
-                            if (BDArmorySettings.DEBUG_MISSILES)
-                                Debug.Log($"[BDArmory.MissileFire]: RAYCAST HIT, clearance is FALSE! part={(p != null ? p.name : null)}, collider={(p != null ? p.collider : null)}");
+                            if (BDArmorySettings.DEBUG_MISSILES) Debug.Log($"[BDArmory.MissileFire]: RAYCAST HIT, clearance is FALSE (50m ahead)! {DescribeClearanceHit(t.Current, p)}");
                             return false;
                         }
                 }
