@@ -690,10 +690,6 @@ namespace BDArmory.Utils
             if (field.host is not PartModule pm) return;
             // Debug.Log($"DEBUG Handling onFieldChanged for {field.guiName} on {field.host} ({pm.part.persistentId}) with obj: {obj}");
             UpdateChooseOptionPAW<T>(field, obj);
-            if (pm is BDGenericAIBase && BDArmoryAIGUI.Instance != null && BDArmoryAIGUI.Instance.ActiveAI == pm)
-            {
-                BDArmoryAIGUI.Instance.SetChooseOptionSliders();
-            }
         }
         /// <summary>
         /// Helper method to avoid having to specify the PartModule type.

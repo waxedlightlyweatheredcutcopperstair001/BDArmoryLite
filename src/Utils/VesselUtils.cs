@@ -6,11 +6,29 @@ using BDArmory.Control;
 using BDArmory.Extensions;
 using BDArmory.FX;
 using BDArmory.Targeting;
+using BDArmory.Weapons.Missiles;
 
 namespace BDArmory.Utils
 {
     public static class VesselUtils
     {
+        /// <summary>Is this part part of a modular missile (below a decoupler with a BDModularGuidance module)?</summary>
+        public static bool IsModularMissilePart(Part part)
+        {
+            if (part is null) return false;
+            var firstDecoupler = BDModularGuidance.FindFirstDecoupler(part.parent, null);
+            return firstDecoupler is not null && HasMMGInChildren(firstDecoupler.part);
+        }
+
+        static bool HasMMGInChildren(Part part)
+        {
+            if (part is null) return false;
+            if (part.FindModuleImplementing<BDModularGuidance>() is not null) return true;
+            foreach (var child in part.children)
+                if (HasMMGInChildren(child)) return true;
+            return false;
+        }
+
         /// <summary>Count the vessel's ignited engines (including FireSpitter engines).</summary>
         public static int CountActiveEngines(Vessel vessel)
         {

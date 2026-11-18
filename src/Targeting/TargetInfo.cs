@@ -628,13 +628,7 @@ namespace BDArmory.Targeting
 
         public float TargetPriFriendliesEngaging(MissileFire myMf)
         {
-            if (myMf == null || myMf.wingCommander == null) return 0;
-            float teammates = myMf.wingCommander.friendlies.Count;
-            if (teammates == 0) return 0; // No teammates
-            float friendsEngaging = Mathf.Max(NumFriendliesEngaging(myMf.Team) - 1, 0);
-            friendsEngaging = 1 - Mathf.Clamp(friendsEngaging / teammates, 0f, 1f);
-            friendsEngaging = friendsEngaging == 0f ? -1f : friendsEngaging;
-            return friendsEngaging; // Range is -1, 0 to 1. -1 if all teammates are engaging target, between 0-1 otherwise depending on number of teammates engaging
+            return 0; // Squadron coordination came from the removed Wing Commander; no teammate data.
         }
 
         public float TargetPriThreat(MissileFire mf, MissileFire myMf)
@@ -765,24 +759,8 @@ namespace BDArmory.Targeting
             return thisSqrDist < otherSqrDist;
         }
 
-        public bool SafeOrbitalIntercept(MissileFire myMf)
-        {
-            // For orbital AI craft, avoid intercepting targets if we are descending and the maneuver will bring our own periapsis to an unsafe altitude
-
-            if (!vessel) return true;
-            var orbitalAI = myMf.vessel.ActiveController().OrbitalAI;
-            if (orbitalAI == null || !orbitalAI.pilotEnabled)
-                return true;
-
-            Orbit o = myMf.vessel.orbit;
-            bool unsafeDescent = o.timeToPe > 0 && o.timeToPe < o.timeToAp && o.PeA < (1.2f * o.referenceBody.MinSafeAltitude());
-            bool inRange = (vessel.CoM - myMf.vessel.CoM).sqrMagnitude < orbitalAI.interceptRanges.y * orbitalAI.interceptRanges.y;
-            Vector3 relVel = vessel.Velocity() - myMf.vessel.Velocity();
-            bool killVelocityNeeded = Vector3.Dot(vessel.CoM - myMf.vessel.CoM, relVel) < 0f &&
-                Vector3.Dot(o.GetPrograde(Planetarium.GetUniversalTime()), relVel) < 0f; // Moving away from each other in prograde direction (kill vel direction is retrograde)
-
-            return (inRange || !(unsafeDescent && killVelocityNeeded));
-        }
+        /// <summary>Orbital-AI intercept safety check. BDArmory Lite has no orbital AI, so intercepts are always allowed.</summary>
+        public bool SafeOrbitalIntercept(MissileFire myMf) => true;
 
         public void VesselModified(Vessel v)
         {

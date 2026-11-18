@@ -2477,13 +2477,7 @@ namespace BDArmory.Radar
             Vector3 upVector = referenceTransform.up;
             Vector3 lookDirection = -forwardVector;
 
-            var AI = myWpnManager.vessel.ActiveController().AI;
-            var ignoreMyTargetTargetingMe = AI != null && AI.pilotEnabled && AI.aiType switch
-            {
-                AIType.PilotAI => (AI as BDModulePilotAI).evasionIgnoreMyTargetTargetingMe,
-                AIType.OrbitalAI => (AI as BDModuleOrbitalAI).evasionIgnoreMyTargetTargetingMe,
-                _ => false
-            };
+            const bool ignoreMyTargetTargetingMe = false; // An AI option; BDArmory Lite has no AI.
             float maxMWSDistance;
             float MWSSqrDist = float.PositiveInfinity;
             bool MWSAddTargets;

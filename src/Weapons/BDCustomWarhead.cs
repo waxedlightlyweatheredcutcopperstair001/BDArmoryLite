@@ -17,16 +17,16 @@ namespace BDArmory.Weapons
         public BulletInfo _warheadType;
 
         [KSPField]
-        public string explModelPath = "BDArmory/Models/explosion/explosion";
+        public string explModelPath = "BDArmoryLite/Models/explosion/explosion";
 
         [KSPField]
-        public string explSoundPath = "BDArmory/Sounds/explode1";
+        public string explSoundPath = "BDArmoryLite/Sounds/explode1";
 
         [KSPField]
         public string smokeTexturePath = "";
 
         [KSPField]
-        public string bulletTexturePath = "BDArmory/Textures/bullet";
+        public string bulletTexturePath = "BDArmoryLite/Textures/bullet";
 
         [KSPField]
         public float maxDeviation = -1f;

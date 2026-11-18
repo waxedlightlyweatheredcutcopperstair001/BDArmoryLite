@@ -58,6 +58,7 @@ dll = os.path.join(MOD, 'Plugins', 'BDArmory.dll')
 raw = open(dll, 'rb').read()
 for m in re.finditer(rb'B\x00D\x00A\x00r\x00m\x00o\x00r\x00y\x00L\x00i\x00t\x00e\x00/\x00((?:[\x20-\x7e]\x00)+)', raw):
     url = 'BDArmoryLite/' + m.group(1).decode('utf-16-le')
+    url = url.split(' ')[0]  # Paths quoted inside log messages ("... not found.")
     if url.endswith('/') or url.endswith('.cfg') or '{' in url:
         continue  # directories, settings files and format strings
     if url in UPSTREAM_MISSING:

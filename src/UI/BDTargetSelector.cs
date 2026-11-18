@@ -52,7 +52,7 @@ namespace BDArmory.UI
 
             height += buttonGap;
             Rect CoMRect = new Rect(margin, height, width - 2 * margin, buttonHeight);
-            GUIStyle CoMStyle = targetWeaponManager.targetCoM ? BDArmorySetup.SelectedButtonStyle : BDArmorySetup.ButtonStyle;
+            GUIStyle CoMStyle = targetWeaponManager.targetCoM ? BDAStyle.ButtonOn : BDArmorySetup.ButtonStyle;
             //FIXME - switch these over to toggles instead of buttons; identified issue with weapon/engine targeting no sawing?
             if (GUI.Button(CoMRect, StringUtils.Localize("#LOC_BDArmory_TargetCOM"), CoMStyle))
             {
@@ -74,7 +74,7 @@ namespace BDArmory.UI
 
             height += buttonGap;
             Rect MassRect = new Rect(margin, height, width - 2 * margin, buttonHeight);
-            GUIStyle MassStyle = targetWeaponManager.targetMass ? BDArmorySetup.SelectedButtonStyle : BDArmorySetup.ButtonStyle;
+            GUIStyle MassStyle = targetWeaponManager.targetMass ? BDAStyle.ButtonOn : BDArmorySetup.ButtonStyle;
 
             if (GUI.Button(MassRect, StringUtils.Localize("#LOC_BDArmory_Mass"), MassStyle))
             {
@@ -92,7 +92,7 @@ namespace BDArmory.UI
 
             height += buttonGap;
             Rect CommandRect = new Rect(margin, height, width - 2 * margin, buttonHeight);
-            GUIStyle CommandStyle = targetWeaponManager.targetCommand ? BDArmorySetup.SelectedButtonStyle : BDArmorySetup.ButtonStyle;
+            GUIStyle CommandStyle = targetWeaponManager.targetCommand ? BDAStyle.ButtonOn : BDArmorySetup.ButtonStyle;
 
             if (GUI.Button(CommandRect, StringUtils.Localize("#LOC_BDArmory_Command"), CommandStyle))
             {
@@ -110,7 +110,7 @@ namespace BDArmory.UI
 
             height += buttonGap;
             Rect EngineRect = new Rect(margin, height, width - 2 * margin, buttonHeight);
-            GUIStyle EngineStyle = targetWeaponManager.targetEngine ? BDArmorySetup.SelectedButtonStyle : BDArmorySetup.ButtonStyle;
+            GUIStyle EngineStyle = targetWeaponManager.targetEngine ? BDAStyle.ButtonOn : BDArmorySetup.ButtonStyle;
 
             if (GUI.Button(EngineRect, StringUtils.Localize("#LOC_BDArmory_Engines"), EngineStyle))
             {
@@ -128,7 +128,7 @@ namespace BDArmory.UI
 
             height += buttonGap;
             Rect weaponRect = new Rect(margin, height, width - 2 * margin, buttonHeight);
-            GUIStyle WepStyle = targetWeaponManager.targetWeapon ? BDArmorySetup.SelectedButtonStyle : BDArmorySetup.ButtonStyle;
+            GUIStyle WepStyle = targetWeaponManager.targetWeapon ? BDAStyle.ButtonOn : BDArmorySetup.ButtonStyle;
 
             if (GUI.Button(weaponRect, StringUtils.Localize("#LOC_BDArmory_Weapons"), WepStyle))
             {
@@ -146,7 +146,7 @@ namespace BDArmory.UI
 
             height += buttonGap;
             Rect RNGRect = new Rect(margin, height, width - 2 * margin, buttonHeight);
-            GUIStyle RNGStyle = targetWeaponManager.targetWeapon ? BDArmorySetup.SelectedButtonStyle : BDArmorySetup.ButtonStyle;
+            GUIStyle RNGStyle = targetWeaponManager.targetWeapon ? BDAStyle.ButtonOn : BDArmorySetup.ButtonStyle;
 
             if (GUI.Button(RNGRect, StringUtils.Localize("#LOC_BDArmory_Random"), RNGStyle))
             {

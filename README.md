@@ -7,12 +7,12 @@ Player-facing documentation is in `tools/overlay/BDArmoryLite/README.md` (it shi
 
 | Path | What |
 |---|---|
-| `src/` | C# source (from BDArmory Continued 1.6.11, tag `v1.6.11.0`, trimmed and modified) |
+| `src/` | C# source (from BDArmory Continued 1.13.1, tag `v1.13.1.0`, trimmed and modified; 1.x was based on 1.6.11) |
 | `build.sh` | Builds `build/BDArmory.dll` |
-| `tools/package.py` | Assembles `GameData/BDArmoryLite` (NKDR in `BDArmoryLite/NKDR`) from the original BDArmory + NKDR download and the DLL |
+| `tools/package.py` | Assembles `GameData/BDArmoryLite` (NKDR in `BDArmoryLite/NKDR`) from BDArmory 1.13.1's `Distribution/GameData`, the NKDR download and the DLL |
 | `tools/validate.py` | Static checks on the package (asset paths, part modules, bullets, ammo, models) |
 | `tools/overlay/` | Hand-written files copied over the package (README) |
-| `tools/rep.py`, `tools/cutblock.py`, `tools/errs.sh` | Editing/build helpers used during the port |
+| `tools/rep.py`, `tools/cutblock.py`, `tools/errs.sh`, `tools/merge_upstream.py`, `tools/resolve.py`, `tools/conflicts.py`, `tools/hunkdiff.py` | Editing/build helpers used during the port |
 | `tools/categorize.py` | Assigns each weapon part its editor subcategory (VAB Organizer) |
 | `GameData/BDArmoryLite/` | The finished mod (generated: don't edit by hand) |
 | `Extras/Ships/SPH/` | NKDR sample craft (copy into a save's `Ships/SPH`) |
@@ -25,7 +25,7 @@ are used: the project compiles against KSP's own mscorlib and Unity assemblies.
 ```bash
 ./build.sh                                   # uses ../Managed-20261117T003226Z-1-001/Managed
 KSPManaged=/path/to/KSP_Data/Managed ./build.sh
-python3 -I tools/package.py                  # needs ../North_Kerbin_Dynamic_Renewed-0.1.1/gameData
+python3 -I tools/package.py                  # needs ../North_Kerbin_Dynamic_Renewed-0.1.1/gameData and ../BDArmory-1.13.1
 python3 -I tools/validate.py
 ```
 

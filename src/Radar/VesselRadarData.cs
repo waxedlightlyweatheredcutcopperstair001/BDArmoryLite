@@ -1787,7 +1787,7 @@ namespace BDArmory.Radar
                 if (v.Current == null) continue;
                 if (!v.Current.vessel || !v.Current.vessel.loaded) continue;
                 bool linked = externalVRDs.Contains(v.Current);
-                GUIStyle style = linked ? BDArmorySetup.SelectedButtonStyle : GUI.skin.button;
+                GUIStyle style = linked ? BDAStyle.ButtonOn : GUI.skin.button;
                 if (
                     GUI.Button(
                         new Rect(8, 8 + (linkRectEntryHeight * numberOfAvailableLinks), linkRectWidth - 16,

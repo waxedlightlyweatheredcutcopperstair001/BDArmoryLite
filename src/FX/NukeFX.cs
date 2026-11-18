@@ -430,22 +430,6 @@ namespace BDArmory.FX
                     LightFx.intensity = 0;
                     LightFx.range = 0;
                 }
-                foreach (var vesselName in explosionEventsVesselsHit.Keys) //once blast completed, register vessel strikes as appropriate
-                {
-                    switch (ExplosionSource)
-                    {
-                        case ExplosionSourceType.Bullet:
-                            if (!bulletHitRegistered)
-                                BDACompetitionMode.Instance.Scores.RegisterBulletHit(SourceVesselName, vesselName);
-                            break;
-                        case ExplosionSourceType.Rocket:
-                            BDACompetitionMode.Instance.Scores.RegisterRocketStrike(SourceVesselName, vesselName);
-                            break;
-                        case ExplosionSourceType.Missile:
-                            BDACompetitionMode.Instance.Scores.RegisterMissileStrike(SourceVesselName, vesselName);
-                            break;
-                    }
-                }
                 gameObject.SetActive(false);
                 return;
             }
@@ -520,55 +504,6 @@ namespace BDArmory.FX
                                 {
                                     BattleDamageHandler.CheckDamageFX(part, 50, 0.5f, true, false, SourceVesselName, eventToExecute.Hit, colliderLocalHitPoint: eventToExecute.ColliderLocalHitPoint);
                                 }
-                                // Update scoring structures
-                                if (BDACompetitionMode.Instance) //moving this here - only give scores to stuff still inside blast radius when blastfront arrives
-                                {
-                                    var tName = part.vessel != null ? part.vessel.GetName() : null; //target
-                                    var aName = eventToExecute.SourceVesselName; // Attacker
-                                    switch (ExplosionSource)
-                                    {
-                                        case ExplosionSourceType.Missile:
-                                            BDACompetitionMode.Instance.Scores.RegisterMissileDamage(aName, tName, damage); //FIXME/TODO - damage should probably correlate in some way to armor mass lost/damage to armor, instead of '0'
-                                            break;
-                                        case ExplosionSourceType.Bullet:
-                                            BDACompetitionMode.Instance.Scores.RegisterBulletDamage(aName, tName, damage);
-                                            break;
-                                        case ExplosionSourceType.Rocket:
-                                            BDACompetitionMode.Instance.Scores.RegisterRocketDamage(aName, tName, damage); //FIXME/TODO - damage should probably correlate in some way to armor mass lost/damage to armor, instead of '0'
-                                            break;
-                                        case ExplosionSourceType.BattleDamage:
-                                            BDACompetitionMode.Instance.Scores.RegisterBattleDamage(aName, part.vessel, damage);
-                                            break;
-
-                                    }
-                                }
-                            }
-                        }
-                        if (BDACompetitionMode.Instance) //register blastfront impact, regardless if it makes it through armor or not
-                        {
-                            bool registered = false;
-                            var damagedVesselName = part.vessel != null ? part.vessel.GetName() : null;
-                            switch (ExplosionSource)
-                            {
-                                case ExplosionSourceType.Missile:
-                                    if (BDACompetitionMode.Instance.Scores.RegisterMissileHit(SourceVesselName, damagedVesselName, 1))
-                                        registered = true;
-                                    break;
-                                case ExplosionSourceType.Rocket:
-                                    if (BDACompetitionMode.Instance.Scores.RegisterRocketHit(SourceVesselName, damagedVesselName, 1))
-                                        registered = true;
-                                    break;
-                                case ExplosionSourceType.Bullet:
-                                    if (!bulletHitRegistered)
-                                        registered = true;
-                                    break;
-                            }
-                            if (registered)
-                            {
-                                if (explosionEventsVesselsHit.ContainsKey(damagedVesselName))
-                                    ++explosionEventsVesselsHit[damagedVesselName];
-                                else
-                                    explosionEventsVesselsHit[damagedVesselName] = 1;
                             }
                         }
                         if (rb != null && rb.mass > 0)

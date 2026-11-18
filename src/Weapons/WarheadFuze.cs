@@ -5,7 +5,7 @@ using BDArmory.Weapons.Missiles;
 namespace BDArmory.Weapons
 {
     /// <summary>
-    /// Part-level warhead control shared by MissileLauncher, BDModuleNuke and BDExplosivePart.
+    /// Part-level warhead control shared by MissileLauncher, BDModuleNuke and the warheads (BDExplosivePart, BDCustomWarhead).
     ///
     /// - Fired munitions arm themselves after a short safety window (see MissileBase.CheckDetonationState).
     /// - The Arm action puts a contact fuze on a part that is still attached: it detonates when the part
@@ -26,7 +26,7 @@ namespace BDArmory.Weapons
             return mml == null || mml.isClusterMissile;
         }
 
-        /// <summary>The module that shows the warhead controls: the missile, else the nuke, else the explosive.</summary>
+        /// <summary>The module that shows the warhead controls: the missile, else the nuke, else the (first) warhead.</summary>
         public static PartModule PrimaryModule(Part p)
         {
             if (p == null) return null;
@@ -34,7 +34,7 @@ namespace BDArmory.Weapons
             if (ml != null) return IsWarheadMissile(ml) ? ml : null; // Multi-missile pods have no warhead of their own.
             var nuke = p.FindModuleImplementing<BDModuleNuke>();
             if (nuke != null) return nuke;
-            return p.FindModuleImplementing<BDExplosivePart>();
+            return p.FindModuleImplementing<BDWarheadBase>();
         }
 
         /// <summary>Show the Arm/Detonate action and Detonate button only on the primary module.</summary>
@@ -57,14 +57,15 @@ namespace BDArmory.Weapons
         {
             var ml = p.FindModuleImplementing<MissileLauncher>(); if (ml != null) ml.contactArmed = armed;
             var nuke = p.FindModuleImplementing<BDModuleNuke>(); if (nuke != null) nuke.contactArmed = armed;
-            var tnt = p.FindModuleImplementing<BDExplosivePart>(); if (tnt != null) tnt.contactArmed = armed;
+            foreach (var tnt in p.FindModulesImplementing<BDWarheadBase>()) tnt.contactArmed = armed;
         }
 
         static bool IsContactArmed(Part p)
         {
             var ml = p.FindModuleImplementing<MissileLauncher>(); if (ml != null && ml.contactArmed) return true;
             var nuke = p.FindModuleImplementing<BDModuleNuke>(); if (nuke != null && nuke.contactArmed) return true;
-            var tnt = p.FindModuleImplementing<BDExplosivePart>(); return tnt != null && tnt.contactArmed;
+            foreach (var tnt in p.FindModulesImplementing<BDWarheadBase>()) if (tnt.contactArmed) return true;
+            return false;
         }
 
         static void UpdateDisarmButton(Part p)
@@ -79,8 +80,7 @@ namespace BDArmory.Weapons
         {
             if (p == null || !HighLogic.LoadedSceneIsFlight || IsLaunched(p) || PrimaryModule(p) == null) return;
             SetContactArmedFlag(p, true);
-            var tnt = p.FindModuleImplementing<BDExplosivePart>();
-            if (tnt != null) tnt.Armed = true;
+            foreach (var tnt in p.FindModulesImplementing<BDWarheadBase>()) tnt.Armed = true;
             if (p.GetComponent<ContactFuze>() == null) p.gameObject.AddComponent<ContactFuze>();
             UpdateDisarmButton(p);
             if (!quiet && p.vessel != null && p.vessel.isActiveVessel)
@@ -95,8 +95,8 @@ namespace BDArmory.Weapons
             var fuze = p.GetComponent<ContactFuze>();
             if (fuze != null) Object.Destroy(fuze);
             var ml = p.FindModuleImplementing<MissileLauncher>();
-            var tnt = p.FindModuleImplementing<BDExplosivePart>();
-            if (tnt != null && ml != null && !ml.HasFired) tnt.Armed = false;
+            if (ml != null && !ml.HasFired)
+                foreach (var tnt in p.FindModulesImplementing<BDWarheadBase>()) tnt.Armed = false;
             UpdateDisarmButton(p);
         }
 
@@ -105,8 +105,7 @@ namespace BDArmory.Weapons
         {
             if (p == null) return;
             SetContactArmedFlag(p, false);
-            var tnt = p.FindModuleImplementing<BDExplosivePart>();
-            if (tnt != null) tnt.Armed = false; // Safe until the launch safety window has passed (MissileBase re-arms it).
+            foreach (var tnt in p.FindModulesImplementing<BDWarheadBase>()) tnt.Armed = false; // Safe until the launch safety window has passed (MissileBase re-arms it).
             var fuze = p.GetComponent<ContactFuze>();
             if (fuze != null) Object.Destroy(fuze);
             UpdateDisarmButton(p);
@@ -126,10 +125,10 @@ namespace BDArmory.Weapons
                 return;
             }
             var nuke = p.FindModuleImplementing<BDModuleNuke>();
-            var tnt = p.FindModuleImplementing<BDExplosivePart>();
-            if (tnt != null) tnt.Armed = true; // So destroying the part (below) also sets off the charge, as when fired.
+            var warheads = p.FindModulesImplementing<BDWarheadBase>();
+            foreach (var tnt in warheads) tnt.Armed = true; // So destroying the part (below) also sets off the charge, as when fired.
             if (nuke != null) nuke.Detonate();
-            if (tnt != null) tnt.ForceDetonate(); // No-op if the nuke's destruction of the part already set it off.
+            foreach (var tnt in warheads) if (tnt != null) tnt.ForceDetonate(); // No-op if the nuke's destruction of the part already set it off.
         }
     }
 

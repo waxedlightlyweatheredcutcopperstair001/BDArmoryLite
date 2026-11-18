@@ -1,10 +1,10 @@
-# BDArmory Lite 1.2.3
+# BDArmory Lite 2.0.0
 
 A streamlined BDArmory for KSP 1.12.x: guns, missiles, bombs, radar, targeting, countermeasures,
 armour plates and the weapon manager, with the North Kerbin Dynamics Renewed (NKDR) weapons
 built in, a dark ZTheme-style interface, and none of the tournament machinery.
 
-Based on BDArmory Continued 1.6.11 (BrettRyland and contributors) and North Kerbin Dynamics
+Based on BDArmory Continued 1.13.1 (BrettRyland and contributors) and North Kerbin Dynamics
 Renewed 0.1.1 (Harpwner and contributors).
 
 ## Install
@@ -22,6 +22,27 @@ don't draw on top of each other (sound and damage are unchanged). This follows V
 Explosion FX's settings: turn its explosions or "replace stock visuals" off, or watch a blast from
 beyond its effect distance, and BDArmory's visuals come back. There is also a toggle under
 Settings > Gameplay.
+
+## New in 2.0.0
+
+Everything from BDArmory 1.13.1 (up from 1.6.11), including:
+
+- Reworked missile guidance and aerodynamics (lofting, command-to-line-of-sight, terminal
+  guidance, torque and g limits, seeker timeouts), arming delays and altitude fuzes.
+- Custom warheads (`BDCustomWarhead`), sonar and torpedo improvements, missile magazines and
+  reloadable rails, and a reworked radar warning receiver with a missile warning system.
+- Radar notching, asymmetric radar scan zones, chaff notch factors and line-of-sight checks
+  through water.
+- Laser attenuation in air and water, conic lasers, turret priorities and aim assist on custom
+  turrets, and many weapon, armour and battle damage fixes.
+
+New settings: UI scale can follow KSP's; a visual effects switch (with water splashes and
+explosion light flashes) for slower computers; infinite countermeasures; ammo crossfeed; radar
+notching; water blocking radar and IR; battle damage penetration threshold; hit point and point
+defence logs.
+
+Left out, like the rest of BDArmory's tournament tools: the course builder, competition
+settings, and the Kerbal suit selector (it adds a suit option to every crewed part).
 
 ## What's different from BDArmory
 

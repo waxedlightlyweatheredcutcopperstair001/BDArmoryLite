@@ -279,22 +279,10 @@ namespace BDArmory.UI
             }
         }
 
-        void AddToolbarButton()
+        public void ToggleWindow()
         {
-            if (!HighLogic.LoadedSceneIsFlight) return;
-            StartCoroutine(ToolbarButtonRoutine());
-        }
-        IEnumerator ToolbarButtonRoutine()
-        {
-            if (toolbarButton) // Just update the callbacks for the current instance.
-            {
-                toolbarButton.onTrue = ShowToolbarGUI;
-                toolbarButton.onFalse = HideToolbarGUI;
-                yield break;
-            }
-            yield return new WaitUntil(() => ApplicationLauncher.Ready && BDArmorySetup.toolbarButtonAdded); // Wait until after the main BDA toolbar button.
-            Texture buttonTexture = GameDatabase.Instance.GetTexture("BDArmory/Textures/Icons/icon", false);
-            toolbarButton = ApplicationLauncher.Instance.AddModApplication(ShowToolbarGUI, HideToolbarGUI, null, null, null, null, ApplicationLauncher.AppScenes.FLIGHT, buttonTexture);
+            if (showTeamIconGUI) HideToolbarGUI();
+            else ShowToolbarGUI();
         }
 
         public void ShowToolbarGUI()
@@ -396,7 +384,6 @@ namespace BDArmory.UI
                 GUI.BeginGroup(IconOptionsGroup, GUIContent.none, BDArmorySetup.SelectedButtonStyle);
                 BDTISettings.TEAMNAMES = GUI.Toggle(SRect(line++), BDTISettings.TEAMNAMES, StringUtils.Localize("#LOC_BDArmory_Icon_teams"), BDArmorySetup.BDGuiSkin.toggle);
                 BDTISettings.VESSELNAMES = GUI.Toggle(SRect(line++), BDTISettings.VESSELNAMES, StringUtils.Localize("#LOC_BDArmory_Icon_names"), BDArmorySetup.BDGuiSkin.toggle);
-                BDTISettings.SCORE = GUI.Toggle(SRect(line++), BDTISettings.SCORE, StringUtils.Localize("#LOC_BDArmory_Icon_score"), BDArmorySetup.BDGuiSkin.toggle);
                 BDTISettings.HEALTHBAR = GUI.Toggle(SRect(line++), BDTISettings.HEALTHBAR, StringUtils.Localize("#LOC_BDArmory_Icon_healthbars"), BDArmorySetup.BDGuiSkin.toggle);
                 BDTISettings.SHOW_SELF = GUI.Toggle(SRect(line++), BDTISettings.SHOW_SELF, StringUtils.Localize("#LOC_BDArmory_Icon_show_self"), BDArmorySetup.BDGuiSkin.toggle);
                 BDTISettings.MISSILES = GUI.Toggle(SRect(line++), BDTISettings.MISSILES, StringUtils.Localize("#LOC_BDArmory_Icon_missiles"), BDArmorySetup.BDGuiSkin.toggle);
@@ -429,7 +416,7 @@ namespace BDArmory.UI
                     {
                         line++;
                         Rect buttonRect = new Rect(30, -20 + (line * 25), 190, 20);
-                        GUIStyle vButtonStyle = showColorSelect ? BDArmorySetup.SelectedButtonStyle : BDArmorySetup.ButtonStyle;
+                        GUIStyle vButtonStyle = showColorSelect ? BDAStyle.ButtonOn : BDArmorySetup.ButtonStyle;
                         if (GUI.Button(buttonRect, $"{teamManagers.Current.Key}", vButtonStyle))
                         {
                             showColorSelect = !showColorSelect;

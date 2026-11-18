@@ -1127,7 +1127,6 @@ namespace BDArmory.Bullets
                 if (!BDArmorySettings.PAINTBALL_MODE)
                 { hitPart.rb.AddForceAtPosition(impactVelocity.normalized * impulse, bulletHit.hit.point, ForceMode.Impulse); }
                 // comment this out and allow impulse rounds to do damage?
-                ProjectileUtils.ApplyScore(hitPart, sourceVessel.GetName(), distanceTraveled, 0, bullet.DisplayName, ExplosionSourceType.Bullet, true);
                 if (BDArmorySettings.BULLET_HITS)
                 {
                     BulletHitFX.CreateBulletHit(hitPart, bulletHit.hit.point, bulletHit.hit, bulletHit.hit.normal, false, caliber, 0, team);
@@ -1554,7 +1553,6 @@ namespace BDArmory.Bullets
                     }
                     ExplosiveDetonation(hitPart, bulletHit.hit, bulletRay);
                     //ProjectileUtils.CalculateShrapnelDamage(hitPart, bulletHit.hit, caliber, tntMass, 0, sourceVesselName, ExplosionSourceType.Bullet, bulletMass, penetrationFactor); //calc damage from bullet exploding 
-                    ProjectileUtils.ApplyScore(hitPart, sourceVesselName, distanceTraveled, 0, bullet.DisplayName, ExplosionSourceType.Bullet, penTicker > 0 ? false : true);
                     hasDetonated = true;
                     KillBullet();
                     return true;
@@ -1654,7 +1652,7 @@ namespace BDArmory.Bullets
                             velocityRatio = 1f - penRatio; // thickness/penetration
                             velocityRatio = 0.05f * (1f - velocityRatio * velocityRatio) + 0.95f; // 1 - (thickness/penetration)^2
                         }
-                        ExplosionFx.CreateExplosion(bulletHit.hit.point, oldBulletMass - bulletMass, "BDArmory/Models/explosion/30mmExplosion", explSoundPath, ExplosionSourceType.Bullet, caliber, null, sourceVesselName, null, null, currentVelocity, 70, false, bulletMass, -1, dmgMult > 0f ? dmgMult : 1f, ExplosionFx.WarheadTypes.Standard, null, 1f, -1, currentVelocity); //explosion simming ablated material flashing into plasma, HE amount = bullet mass lost on hit
+                        ExplosionFx.CreateExplosion(bulletHit.hit.point, oldBulletMass - bulletMass, "BDArmoryLite/Models/explosion/30mmExplosion", explSoundPath, ExplosionSourceType.Bullet, caliber, null, sourceVesselName, null, null, currentVelocity, 70, false, bulletMass, -1, dmgMult > 0f ? dmgMult : 1f, ExplosionFx.WarheadTypes.Standard, null, 1f, -1, currentVelocity); //explosion simming ablated material flashing into plasma, HE amount = bullet mass lost on hit
                     }
                     else
                     {
@@ -2050,9 +2048,6 @@ namespace BDArmory.Bullets
                 pBullet.isAPSprojectile = isAPSP;
                 pBullet.gameObject.SetActive(true);
 
-                if (registerShot)
-                    BDACompetitionMode.Instance.Scores.RegisterShot(sourceInfo.vessel.GetName());
-
                 if (!addSourcePartVel)
                 {
                     pBullet.SetTracerPosition();
@@ -2105,7 +2100,7 @@ namespace BDArmory.Bullets
                 SourceInfo sourceInfo = new SourceInfo(sourceVessel, team, sourceWeapon, currentPosition);
                 GraphicsInfo graphicsInfo = new GraphicsInfo(bulletTexturePath, sBullet.projectileColorC, sBullet.startColorC,
                     sBullet.caliber / 300, sBullet.caliber / 750, tracerLength, tracerLuminance, tracerDeltaFactor, "",
-                    sBullet.tntMass > 0.5f ? explModelPath : "BDArmory/Models/explosion/30mmExplosion", explSoundPath);
+                    sBullet.tntMass > 0.5f ? explModelPath : "BDArmoryLite/Models/explosion/30mmExplosion", explSoundPath);
                 NukeInfo nukeInfo = sBullet.nuclear ? new NukeInfo(flashModelPath, shockModelPath, blastModelPath,
                     plumeModelPath, debrisModelPath, blastSoundPath) : new NukeInfo();
 

@@ -1148,7 +1148,7 @@ namespace BDArmory.Targeting
 
             //CoM lock
             Rect comLockRect = new(startX, controlsStartY + ++line * lineHeight, buttonWidth, buttonHeight);
-            GUIStyle comStyle = new(CoMLock ? BDArmorySetup.SelectedButtonStyle : buttonStyle)
+            GUIStyle comStyle = new(CoMLock ? BDAStyle.ButtonOn : buttonStyle)
             {
                 fontSize = 10,
                 wordWrap = false
@@ -1160,7 +1160,7 @@ namespace BDArmory.Targeting
 
             //radar slave
             Rect radarSlaveRect = new Rect(startX, controlsStartY + ++line * lineHeight, buttonWidth, buttonHeight);
-            GUIStyle radarSlaveStyle = radarLock ? BDArmorySetup.SelectedButtonStyle : buttonStyle;
+            GUIStyle radarSlaveStyle = radarLock ? BDAStyle.ButtonOn : buttonStyle;
             if (GUI.Button(radarSlaveRect, "Radar", radarSlaveStyle))
             {
                 radarLock = !radarLock;
@@ -1194,7 +1194,7 @@ namespace BDArmory.Targeting
             float nvStartX = startX;
             Rect nvRect = new Rect(nvStartX, controlsStartY + ++line * lineHeight, buttonWidth, buttonHeight);
             string nvLabel = nvMode ? "NV Off" : "NV On";
-            GUIStyle nvStyle = nvMode ? BDArmorySetup.SelectedButtonStyle : buttonStyle;
+            GUIStyle nvStyle = nvMode ? BDAStyle.ButtonOn : buttonStyle;
             if (GUI.Button(nvRect, nvLabel, nvStyle))
             {
                 ToggleNV();
@@ -1203,13 +1203,13 @@ namespace BDArmory.Targeting
             if (BDArmorySettings.DEBUG_RADAR) // Debug what the various cameras show in the targeting window.
             {
                 ++line;
-                if (GUI.Button(new Rect(nvStartX, controlsStartY + ++line * lineHeight, buttonWidth, buttonHeight), $"Near", TargetingCamera.Instance.CamEnabled[0] ? BDArmorySetup.SelectedButtonStyle : buttonStyle))
+                if (GUI.Button(new Rect(nvStartX, controlsStartY + ++line * lineHeight, buttonWidth, buttonHeight), $"Near", TargetingCamera.Instance.CamEnabled[0] ? BDAStyle.ButtonOn : buttonStyle))
                     TargetingCamera.Instance.CamEnabled[0] = !TargetingCamera.Instance.CamEnabled[0];
-                if (GUI.Button(new Rect(nvStartX, controlsStartY + ++line * lineHeight, buttonWidth, buttonHeight), $"Far", TargetingCamera.Instance.CamEnabled[1] ? BDArmorySetup.SelectedButtonStyle : buttonStyle))
+                if (GUI.Button(new Rect(nvStartX, controlsStartY + ++line * lineHeight, buttonWidth, buttonHeight), $"Far", TargetingCamera.Instance.CamEnabled[1] ? BDAStyle.ButtonOn : buttonStyle))
                     TargetingCamera.Instance.CamEnabled[1] = !TargetingCamera.Instance.CamEnabled[1];
-                if (GUI.Button(new Rect(nvStartX, controlsStartY + ++line * lineHeight, buttonWidth, buttonHeight), $"Sky", TargetingCamera.Instance.CamEnabled[2] ? BDArmorySetup.SelectedButtonStyle : buttonStyle))
+                if (GUI.Button(new Rect(nvStartX, controlsStartY + ++line * lineHeight, buttonWidth, buttonHeight), $"Sky", TargetingCamera.Instance.CamEnabled[2] ? BDAStyle.ButtonOn : buttonStyle))
                     TargetingCamera.Instance.CamEnabled[2] = !TargetingCamera.Instance.CamEnabled[2];
-                if (GUI.Button(new Rect(nvStartX, controlsStartY + ++line * lineHeight, buttonWidth, buttonHeight), $"Galaxy", TargetingCamera.Instance.CamEnabled[3] ? BDArmorySetup.SelectedButtonStyle : buttonStyle))
+                if (GUI.Button(new Rect(nvStartX, controlsStartY + ++line * lineHeight, buttonWidth, buttonHeight), $"Galaxy", TargetingCamera.Instance.CamEnabled[3] ? BDAStyle.ButtonOn : buttonStyle))
                     TargetingCamera.Instance.CamEnabled[3] = !TargetingCamera.Instance.CamEnabled[3];
             }
         }

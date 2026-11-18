@@ -777,7 +777,7 @@ namespace BDArmory.Weapons
         public string laserTexturePath = "BDArmoryLite/Textures/laser";
 
         [KSPField]
-        public string laserModelPath = "BDArmory/Models/laser/laserCone";
+        public string laserModelPath = "BDArmoryLite/Models/laser/laserCone";
 
         public List<string> laserTexList;
 
@@ -2644,7 +2644,6 @@ namespace BDArmory.Weapons
                         for (float iTime = Mathf.Min(timeSinceFired - timeGap, TimeWarp.fixedDeltaTime); iTime > 1e-4f; iTime -= timeGap)
                         {
                             timeFired = Time.time - iTime;
-                            BDACompetitionMode.Instance.Scores.RegisterShot(aName);
                             if (!conicAoE)
                                 LaserBeam(aName);
                             else
@@ -3195,7 +3194,7 @@ namespace BDArmory.Weapons
                                         if (instagib)
                                         {
                                             hitPart.AddInstagibDamage();
-                                            ExplosionFx.CreateExplosion(hitPart.transform.position, 1, "BDArmory/Models/explosion/explosion", explSoundPath, ExplosionSourceType.Bullet, 0, null, vessel.vesselName, null, Hitpart: hitPart);
+                                            ExplosionFx.CreateExplosion(hitPart.transform.position, 1, "BDArmoryLite/Models/explosion/explosion", explSoundPath, ExplosionSourceType.Bullet, 0, null, vessel.vesselName, null, Hitpart: hitPart);
                                             continue;
                                         }
                                         if (hitPart == parts.Current)
@@ -3271,26 +3270,6 @@ namespace BDArmory.Weapons
                                 }
                             }
                     }
-
-                    var aName = vesselname;
-                    var tName = loadedvessels.Current.GetName();
-                    if (BDACompetitionMode.Instance.Scores.RegisterBulletDamage(aName, tName, Mathf.Abs(damage)))
-                    {
-                        if (pulseLaser || (!pulseLaser && ScoreAccumulator > beamScoreTime)) // Score hits with pulse lasers or when the score accumulator is sufficient.
-                        {
-                            ScoreAccumulator = 0;
-                            BDACompetitionMode.Instance.Scores.RegisterBulletHit(aName, tName, WeaponName, distance);
-                            if (ProjectileUtils.isReportingWeapon(part) && BDACompetitionMode.Instance.competitionIsActive)
-                            {
-                                string message = $"{tName} hit by {aName}'s {OriginalShortName} at {distance:F3}m!";
-                                BDACompetitionMode.Instance.competitionStatus.Add(message);
-                            }
-                        }
-                        else
-                        {
-                            ScoreAccumulator += TimeWarp.fixedDeltaTime;
-                        }
-                    }
                 }
         }
 
@@ -3327,7 +3306,7 @@ namespace BDArmory.Weapons
                         r_cone[i] = beamCone[i].GetComponentInChildren<Renderer>();
                         r_cone[i].material = new Material(Shader.Find("KSP/Particles/Additive"));
                         r_cone[i].material.SetColor("_TintColor", laserColor);
-                        r_cone[i].material.mainTexture = GameDatabase.Instance.GetTexture("BDArmory/Models/laser/laserTex", false);
+                        r_cone[i].material.mainTexture = GameDatabase.Instance.GetTexture("BDArmoryLite/Models/laser/laserTex", false);
                     }
                 }
             }
@@ -3973,7 +3952,7 @@ namespace BDArmory.Weapons
         {
             try
             {
-                var wm = weaponManager;
+                var wm = WeaponManager;
                 string turretState = turret == null ? "n/a" : (turret.TargetInRange(finalAimTarget, 10, float.MaxValue) ? "on target" : "NOT on target");
                 string locks = InputLockManager.lockStack.Count == 0 ? "none" : string.Join(", ", InputLockManager.lockStack.Keys);
                 Debug.Log($"[BDArmory.ModuleWeapon]: Fire key pressed. {OriginalShortName} ({part.partInfo.name}) on {vessel.vesselName}: " +

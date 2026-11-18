@@ -637,7 +637,6 @@ namespace BDArmory.Bullets
                 {
                     hitPart.rb.AddForceAtPosition(impactVector.normalized * impulse, hit.point, ForceMode.Acceleration);
                 }
-                BDACompetitionMode.Instance.Scores.RegisterRocketStrike(sourceVesselName, hitPart.vessel.GetName());
                 Detonate(hit.point, false, hitPart);
                 return true; //impulse rounds shouldn't penetrate/do damage
             }
@@ -754,11 +753,6 @@ namespace BDArmory.Bullets
                 {
                     bool cockpitPen = (16f * impactVelocity * BDAMath.Sqrt(rocketMass / caliber)) > Mathf.Max(20 / anglemultiplier, 1);
                     ProjectileUtils.ApplyDamage(hitPart, hit, dmgMult, penetrationFactor, caliber, rocketMass * 1000, impactVelocity, bulletDmgMult, distanceFromStart, explosive, incendiary, false, sourceVessel, rocketName, team, ExplosionSourceType.Rocket, penTicker <= 0, penTicker <= 0, cockpitPen);
-
-                    if (!explosive)
-                    {
-                        BDACompetitionMode.Instance.Scores.RegisterRocketStrike(sourceVesselName, hitPart.vessel.GetName()); //if non-explosive hit, add rocketstrike, else ExplosionFX adds rocketstrike from HE detonation
-                    }
                 }
                 ResourceUtils.StealResources(hitPart, sourceVessel, thief);
 
@@ -1090,9 +1084,9 @@ namespace BDArmory.Bullets
                 float relVelocity = (thrust / rocketMass) * Mathf.Clamp(Time.time - startTime, 0, thrustTime); //currVel is rocketVel + orbitalvel, if in orbit, which will dramatically increase dispersion cone angle, so using accel * time instad
 
                 SourceInfo sourceInfo = new SourceInfo(sourceVessel, team, sourceWeapon, currentPosition);
-                GraphicsInfo graphicsInfo = new GraphicsInfo("BDArmory/Textures/bullet", sBullet.projectileColorC, sBullet.startColorC,
+                GraphicsInfo graphicsInfo = new GraphicsInfo("BDArmoryLite/Textures/bullet", sBullet.projectileColorC, sBullet.startColorC,
                     sBullet.caliber / 300, sBullet.caliber / 750, 0, 1.75f, 2.65f, "",
-                    sBullet.tntMass > 0.5f ? explModelPath : "BDArmory/Models/explosion/30mmExplosion", explSoundPath);
+                    sBullet.tntMass > 0.5f ? explModelPath : "BDArmoryLite/Models/explosion/30mmExplosion", explSoundPath);
                 NukeInfo nukeInfo = sBullet.nuclear ? new NukeInfo(flashModelPath, shockModelPath, blastModelPath,
                     plumeModelPath, debrisModelPath, blastSoundPath) : new NukeInfo();
 

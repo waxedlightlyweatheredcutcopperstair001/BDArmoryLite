@@ -1,9 +1,9 @@
-"""Assemble GameData/BDArmoryLite (with NKDR in BDArmoryLite/NKDR) from the original BDArmory + NKDR download and the built DLL.
+"""Assemble GameData/BDArmoryLite (with NKDR in BDArmoryLite/NKDR) from BDArmory 1.13.1, the NKDR download and the built DLL.
 
 Asset paths are rewritten from BDArmory/... and NKDR/... to BDArmoryLite/... and BDArmoryLite/NKDR/....
 Every weapon part is also given an editor subcategory (see tools/categorize.py) for VAB Organizer.
 
-Usage: python3 -I tools/package.py [path/to/North_Kerbin_Dynamic_Renewed-0.1.1/gameData]
+Usage: python3 -I tools/package.py [path/to/North_Kerbin_Dynamic_Renewed-0.1.1/gameData] [path/to/BDArmory-1.13.1/BDArmory/Distribution/GameData]
 
 Everything under GameData/BDArmoryLite is regenerated from scratch on each run, except for
 files listed in OVERLAY (hand-written files in tools/overlay/ that are copied over the top).
@@ -15,7 +15,8 @@ import categorize
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(ROOT), 'North_Kerbin_Dynamic_Renewed-0.1.1', 'gameData')
-BDA = os.path.join(SRC, 'BDArmory')
+BDA_SRC = sys.argv[2] if len(sys.argv) > 2 else os.path.join(os.path.dirname(ROOT), 'BDArmory-1.13.1', 'BDArmory', 'Distribution', 'GameData')
+BDA = os.path.join(BDA_SRC, 'BDArmory')
 NKDR = os.path.join(SRC, 'NKDR')
 OUT_ROOT = os.path.join(ROOT, 'GameData')
 OUT = os.path.join(OUT_ROOT, 'BDArmoryLite')
@@ -29,6 +30,9 @@ BDA_FILES = ['License.txt', 'Credits.txt']
 EXCLUDE = [  # paths relative to the BDArmory folder (prefix match), plus junk everywhere
     'Parts/aiPilot',                 # AI pilots (removed)
     'Models/Mutators', 'Models/WayPoint', 'Textures/Mutators',  # Mutators / waypoint courses (removed)
+    'Textures/icon_ai.png', 'Textures/icon_vm.png', 'Textures/icon_Armor.png', 'Textures/Formation',  # Toolbar icons and wing commander icons for removed systems
+    'MMPatches/VABOrganiser.cfg',    # BDArmory's own VAB Organizer groups; BDArmory Lite writes its own (see categorize.py)
+    'MMPatches/BDA_KerbalSuitSelector.cfg',  # Suit chooser on every crewed part (module not included)
     'BulletDefs/BD_Mutators.cfg', 'BulletDefs/Inventory.txt',
     'MMPatches/StructPWing.cfg',     # B9 procedural structural panel clone, not a weapons system
     'Parts/AmmoBox/UniversalAmmoBoxBDA.cfg',  # "Universal Ammo Box (Legacy)": duplicate of BDAcUniversalAmmoBox (same model, same ammo)

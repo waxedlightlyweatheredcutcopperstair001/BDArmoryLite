@@ -2054,15 +2054,7 @@ namespace BDArmory.Weapons.Missiles
                     tnt.Team = Team;
                     tnt.sourcevessel = SourceVessel;
                 }
-<<<<<<< lite
-                if (BDArmorySettings.DEBUG_MISSILES) Debug.Log("[BDArmory.MissileLauncher]: Missile Launched!");
-||||||| base-1.6.11
-                if (BDArmorySettings.DEBUG_MISSILES) Debug.Log("[BDArmory.MissileLauncher]: Missile Launched!");
-                if (BDArmorySettings.CAMERA_SWITCH_INCLUDE_MISSILES && SourceVessel.isActiveVessel) LoadedVesselSwitcher.Instance.ForceSwitchVessel(vessel);
-=======
                 if (BDArmorySettings.DEBUG_MISSILES) Debug.Log($"[BDArmory.MissileLauncher]: {Time.time} Missile Launched!");
-                if (BDArmorySettings.CAMERA_SWITCH_INCLUDE_MISSILES && SourceVessel.isActiveVessel) LoadedVesselSwitcher.Instance.ForceSwitchVessel(vessel);
->>>>>>> upstream
             }
             catch (Exception e)
             {
@@ -2197,20 +2189,6 @@ namespace BDArmory.Weapons.Missiles
 
                 if (HasFired && !HasExploded && part != null)
                 {
-<<<<<<< lite
-                    CheckDetonationState();
-                    CheckDetonationDistance();
-                    if (!HasExploded && IsArmed && part.WaterContact && !torpedo && GetWeaponClass() != WeaponClasses.SLW) // Water has no collider, so treat touching it as an impact.
-                    {
-                        if (BDArmorySettings.DEBUG_MISSILES) Debug.Log("[BDArmory.MissileLauncher]: Armed missile hit the water - Triggering Detonation");
-                        Detonate();
-                    }
-                    if (HasExploded || part == null) return;
-||||||| base-1.6.11
-                    CheckDetonationState();
-                    CheckDetonationDistance();
-=======
->>>>>>> upstream
                     part.rb.isKinematic = false;
                     AntiSpin();
                     //simpleDrag
@@ -2256,6 +2234,12 @@ namespace BDArmory.Weapons.Missiles
                         CheckDetonationState(preventProxyArming: true);
                         CheckDetonationDistance();
                     }
+                    if (!HasExploded && IsArmed && part.WaterContact && !torpedo && GetWeaponClass() != WeaponClasses.SLW) // BDArmory Lite: water has no collider, so treat touching it as an impact.
+                    {
+                        if (BDArmorySettings.DEBUG_MISSILES) Debug.Log("[BDArmory.MissileLauncher]: Armed missile hit the water - Triggering Detonation");
+                        Detonate();
+                    }
+                    if (HasExploded || part == null) return;
 
                     CheckCountermeasureDistance();
 
@@ -2291,10 +2275,7 @@ namespace BDArmory.Weapons.Missiles
             }
         }
 
-<<<<<<< lite
         bool hadTarget = false;
-||||||| base-1.6.11
-=======
         void CheckAltitudeDetonation()
         {
             switch (altitudeFuze)
@@ -2385,7 +2366,6 @@ namespace BDArmory.Weapons.Missiles
             Debug.Log($"[BDArmory.MissileLauncher]: Missile: {shortName} with UUID: {vessel.id} has concluded engagement with target: {debugGuidanceTarget}{(targetVessel ? $" ({targetVessel.Name()} with UUID {targetVessel.ID()})" : "")} at TimeIndex: {TimeIndex} s with a final distance of: {(vessel.CoM - (targetVessel ? targetVessel.position : TargetPosition)).magnitude} m and closing velocity of: {(vessel.Velocity() - (targetVessel && targetVessel.Vessel ? targetVessel.Vessel.Velocity() : (Vector3d)TargetVelocity)).magnitude} m/s at a terminal airspeed of: {vessel.srfSpeed} m/s at an altitude of: {vessel.altitude} m with air density: {vessel.atmDensity} kg/m³.");
         }
 
->>>>>>> upstream
         private void CheckMiss()
         {
             if (weaponClass == WeaponClasses.Bomb) return;
@@ -3281,16 +3261,8 @@ namespace BDArmory.Weapons.Missiles
                 }
 
             if (!(thrust > 0)) return;
-<<<<<<< lite
             sfAudioSource.PlayOneShot(SoundUtils.GetAudioClip("BDArmoryLite/Sounds/launch"));
-            RadarWarningReceiver.WarnMissileLaunch(transform.position, transform.forward, TargetingMode == TargetingModes.Radar);
-||||||| base-1.6.11
-            sfAudioSource.PlayOneShot(SoundUtils.GetAudioClip("BDArmory/Sounds/launch"));
-            RadarWarningReceiver.WarnMissileLaunch(transform.position, transform.forward, TargetingMode == TargetingModes.Radar);
-=======
-            sfAudioSource.PlayOneShot(SoundUtils.GetAudioClip("BDArmory/Sounds/launch"));
             RadarWarningReceiver.WarnMissileLaunch(vessel.CoM, transform.forward, TargetingMode == TargetingModes.Radar, vessel);
->>>>>>> upstream
         }
 
         void EndBoost()
@@ -4132,17 +4104,11 @@ namespace BDArmory.Weapons.Missiles
                 return;
             }
 
-<<<<<<< lite
-            if (BDArmorySettings.DEBUG_MISSILES) Debug.Log($"[BDArmory.MissileLauncher]: Detonate Triggered{(force ? " (forced)" : "")}");
-||||||| base-1.6.11
-            if (BDArmorySettings.DEBUG_MISSILES) Debug.Log("[BDArmory.MissileLauncher]: Detonate Triggered");
-=======
             if (BDArmorySettings.DEBUG_MISSILES)
             {
-                Debug.Log("[BDArmory.MissileLauncher]: Detonate Triggered");
-                if (!HasMissed) SummarizeEngagement();
+                Debug.Log($"[BDArmory.MissileLauncher]: Detonate Triggered{(force ? " (forced)" : "")}");
+                if (!HasMissed && HasFired) SummarizeEngagement();
             }
->>>>>>> upstream
 
             if (HasFired) BDArmorySetup.numberOfParticleEmitters--;
             HasExploded = true;
@@ -4186,48 +4152,13 @@ namespace BDArmory.Weapons.Missiles
                     warheadType == WarheadTypes.Custom ||
                     warheadType == WarheadTypes.CustomStandard || warheadType == WarheadTypes.CustomContinuous)
                 {
-<<<<<<< lite
-                    var tnt = part.FindModuleImplementing<BDExplosivePart>();
-                    if (tnt != null)
-                    {
-                        if (force) tnt.ForceDetonate();
-                        else tnt.DetonateIfPossible();
-                        FuseFailed = tnt.fuseFailed;
-                    }
-||||||| base-1.6.11
-                    var tnt = part.FindModuleImplementing<BDExplosivePart>();
-                    tnt.DetonateIfPossible();
-                    FuseFailed = tnt.fuseFailed;
-=======
-                    /*
-                    if (warheadType == WarheadTypes.Standard || warheadType == WarheadTypes.ContinuousRod ||
-                    warheadType == WarheadTypes.CustomStandard || warheadType == WarheadTypes.CustomContinuous)
-                    {
-                        var tnt = part.FindModuleImplementing<BDExplosivePart>();
-                        tnt.DetonateIfPossible();
-                        FuseFailed = tnt.fuseFailed;
-                        guidanceActive = false;
-                        if (FuseFailed)
-                            HasExploded = false;
-                    }
-
-                    if (warheadType == WarheadTypes.Custom || warheadType == WarheadTypes.CustomStandard || warheadType == WarheadTypes.CustomContinuous)
-                    {
-                        var warhead = part.FindModuleImplementing<BDCustomWarhead>();
-                        warhead.DetonateIfPossible();
-                        FuseFailed = warhead.fuseFailed;
-                        guidanceActive = false;
-                        if (FuseFailed)
-                            HasExploded = false;
-                    }
-                    */
                     var tntList = part.FindModulesImplementing<BDWarheadBase>();
                     foreach (BDWarheadBase tnt in tntList)
                     {
-                        tnt.DetonateIfPossible();
+                        if (force) tnt.ForceDetonate();
+                        else tnt.DetonateIfPossible();
                         FuseFailed = tnt.fuseFailed || FuseFailed;
                     }
->>>>>>> upstream
                     guidanceActive = false;
                     if (FuseFailed)
                         HasExploded = false;
@@ -4240,15 +4171,8 @@ namespace BDArmory.Weapons.Missiles
                 else if (warheadType == WarheadTypes.EMP || warheadType == WarheadTypes.Legacy) // EMP/really old legacy missiles using BlastPower
                 {
                     Vector3 position = transform.position;//+rigidbody.velocity*Time.fixedDeltaTime;
-<<<<<<< lite
 
                     ExplosionFx.CreateExplosion(position, blastPower, explModelPath, explSoundPath, ExplosionSourceType.Missile, 0, part, SourceVessel.vesselName, Team != null ? Team.Name : null, GetShortName(), default(Vector3), -1, warheadType == WarheadTypes.EMP, part.mass * 1000);
-||||||| base-1.6.11
-
-                    ExplosionFx.CreateExplosion(position, blastPower, explModelPath, explSoundPath, ExplosionSourceType.Missile, 0, part, SourceVessel.vesselName, Team.Name, GetShortName(), default(Vector3), -1, warheadType == WarheadTypes.EMP, part.mass * 1000);
-=======
-                    ExplosionFx.CreateExplosion(position, blastPower, explModelPath, explSoundPath, ExplosionSourceType.Missile, 0, part, SourceVessel.vesselName, Team.Name, GetShortName(), default(Vector3), -1, warheadType == WarheadTypes.EMP, part.mass * 1000);
->>>>>>> upstream
                 }
                 else if (warheadType == WarheadTypes.Kinetic) // Missile will usually just phase through target at high speeds (even with ContinuousCollisions mod), so fake effects using an explosion originating at point of impact
                 {

@@ -8,7 +8,6 @@ using BDArmory.Settings;
 using BDArmory.Targeting;
 using BDArmory.UI;
 using BDArmory.Utils;
-using BDArmory.VesselSpawning;
 using BDArmory.WeaponMounts;
 using KSP.UI.Screens;
 using System;
@@ -1573,8 +1572,8 @@ namespace BDArmory.Weapons.Missiles
             {
                 if (StagesNumber == 1) // Auto-enable engines for single stage missiles.
                 {
-                    if (SpawnUtils.CountActiveEngines(vessel) < 1)
-                        SpawnUtils.ActivateAllEngines(vessel, true, false);
+                    if (VesselUtils.CountActiveEngines(vessel) < 1)
+                        VesselUtils.ActivateAllEngines(vessel, true);
                 }
                 var warheads = VesselModuleRegistry.GetModules<BDExplosivePart>(vessel);
                 if (!warheads.Any(warhead => warhead.Armed)) // Auto-arm warheads if none are armed.
@@ -1687,7 +1686,6 @@ namespace BDArmory.Weapons.Missiles
             {
                 vessel.ActionGroups.SetGroup(KSPActionGroup.RCS, true);
             }
-            if (BDArmorySettings.CAMERA_SWITCH_INCLUDE_MISSILES && SourceVessel.isActiveVessel) LoadedVesselSwitcher.Instance.ForceSwitchVessel(vessel);
             if (FiredByWM != null)
                 FiredByWM.UpdateList();
         }
@@ -1771,8 +1769,6 @@ namespace BDArmory.Weapons.Missiles
                 weaponManager.UpdateList();
                 if (weaponManager.guardMode) weaponManager.ToggleGuardMode();
             }
-            var AI = vessel.ActiveController().AI; // Get the AI if the missile has one and deactivate it. The MMG is in control.
-            if (AI != null) AI.DeactivatePilot();
         }
 
         public override float GetBlastRadius()
@@ -1847,7 +1843,7 @@ namespace BDArmory.Weapons.Missiles
                     Ray ray = new(transform.position, relVel);
                     if (Physics.Raycast(ray, out RaycastHit hit, 500f, (int)(LayerMasks.Parts | LayerMasks.EVA | LayerMasks.Wheels)))
                     {
-                        ExplosionFx.CreateExplosion(hit.point, 0.5f * (1000f * vessel.GetTotalMass()) * relVel.sqrMagnitude / 4184000f, "BDArmory/Models/explosion/explosion", "BDArmory/Sounds/explode1", ExplosionSourceType.Missile, 1000f * vessel.GetRadius(), part, SourceVesselName, Team.Name, GetShortName(), ray.direction, -1, false, part.mass, -1, 1, ExplosionFx.WarheadTypes.Kinetic, null, 1.2f, sourceVelocity: vessel.Velocity());
+                        ExplosionFx.CreateExplosion(hit.point, 0.5f * (1000f * vessel.GetTotalMass()) * relVel.sqrMagnitude / 4184000f, "BDArmoryLite/Models/explosion/explosion", "BDArmoryLite/Sounds/explode1", ExplosionSourceType.Missile, 1000f * vessel.GetRadius(), part, SourceVesselName, Team.Name, GetShortName(), ray.direction, -1, false, part.mass, -1, 1, ExplosionFx.WarheadTypes.Kinetic, null, 1.2f, sourceVelocity: vessel.Velocity());
                     }
                 }
             }

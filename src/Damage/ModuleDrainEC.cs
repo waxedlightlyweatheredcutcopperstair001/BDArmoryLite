@@ -30,7 +30,6 @@ namespace BDArmory.Damage
         public bool isMissile = false;
         private float rebootTimer = 15;
         //if for whatever reason players are manually firing EMPs at targets with AI/WM disabled, don't enable them when vessel reboots
-        private IBDAIControl activeAI = null;
         private List<MissileFire> activeWMs = [];
         private List<ModuleRoboticServoHinge> activeHinges = [];
         private List<ModuleRoboticRotationServo> activeServos = [];
@@ -166,7 +165,7 @@ namespace BDArmory.Damage
             {
                 var message = "Rebooting " + vessel.vesselName;
                 if (BDArmorySettings.DEBUG_DAMAGE) Debug.Log("[BDArmory.ModuleDrainEC]: " + message);
-                BDACompetitionMode.Instance.competitionStatus.Add(message);
+                if (vessel.isActiveVessel) ScreenMessages.PostScreenMessage(message, 5f, ScreenMessageStyle.UPPER_CENTER);
                 EnableVessel(EMPbuildupTiers.None);
             }
         }
@@ -269,10 +268,6 @@ namespace BDArmory.Damage
                 {
                     command.minimumCrew *= 10; //disable vessel control
                 }
-                // Store the active AI if there was one.
-                var AI = vessel.ActiveController().AI;
-                activeAI = (AI != null && AI.pilotEnabled) ? AI : null;
-                if (AI != null && AI.pilotEnabled) AI.DeactivatePilot(); //disable AI
 
                 // Store the guardMode state of the WMs.
                 activeWMs.Clear();
@@ -285,9 +280,9 @@ namespace BDArmory.Damage
                 rebootTimer = BDArmorySettings.WEAPON_FX_DURATION;
                 var message = "Disabling " + vessel.vesselName + " for " + rebootTimer + "s due to EMP damage";
                 if (BDArmorySettings.DEBUG_DAMAGE) Debug.Log("[BDArmory.ModuleDrainEC]: " + message);
-                BDACompetitionMode.Instance.competitionStatus.Add(message);
+                if (vessel.isActiveVessel) ScreenMessages.PostScreenMessage(message, 5f, ScreenMessageStyle.UPPER_CENTER);
 
-                var empFX = Instantiate(GameDatabase.Instance.GetModel("BDArmory/FX/Electroshock"),
+                var empFX = Instantiate(GameDatabase.Instance.GetModel("BDArmoryLite/FX/Electroshock"),
                 vessel.rootPart.transform.position, Quaternion.identity);
                 empFX.SetActive(true);
                 empFX.transform.SetParent(vessel.rootPart.transform);
@@ -373,10 +368,6 @@ namespace BDArmory.Damage
                         command.minimumCrew /= 10; //more elegant than a dict storing every crew part's cap to restore to original amount
                     }
                 }
-                // Previously enabled active AI is still attached, fire it up again.
-                if (activeAI != null && activeAI.vessel == vessel)
-                    activeAI.ActivatePilot();
-                activeAI = null;
 
                 // Restore the guardMode state of the WMs.
                 foreach (var wm in VesselModuleRegistry.GetMissileFires(vessel).Where(wm => wm != null)) wm.debilitated = false;

@@ -100,7 +100,7 @@ namespace BDArmory.UI
 
                     height += buttonGap;
                     Rect buttonRect = new Rect(margin, height, width - buttonHeight - 4 * margin, buttonHeight);
-                    GUIStyle buttonStyle = (teams.Current == targetWeaponManager.Team) ? BDArmorySetup.SelectedButtonStyle : BDArmorySetup.ButtonStyle;
+                    GUIStyle buttonStyle = (teams.Current == targetWeaponManager.Team) ? BDAStyle.ButtonOn : BDArmorySetup.ButtonStyle;
 
                     if (GUI.Button(buttonRect, teams.Current.Name + (teams.Current.Neutral ? (teams.Current.Name != "Neutral" ? "(Neutral)" : "") : ""), buttonStyle))
                     {
@@ -119,7 +119,7 @@ namespace BDArmory.UI
                     }
                     if (teams.Current.Name != "Neutral" && teams.Current.Name != "A" && teams.Current.Name != "B" && !teams.Current.Neutral && teams.Current != targetWeaponManager.Team)
                     {
-                        if (GUI.Button(new Rect(width - buttonHeight, height, buttonHeight - 2 * margin, buttonHeight), "[A]", (targetWeaponManager.Team.Allies.Contains(teams.Current.Name)) ? BDArmorySetup.SelectedButtonStyle : BDArmorySetup.ButtonStyle))
+                        if (GUI.Button(new Rect(width - buttonHeight, height, buttonHeight - 2 * margin, buttonHeight), "[A]", (targetWeaponManager.Team.Allies.Contains(teams.Current.Name)) ? BDAStyle.ButtonOn : BDArmorySetup.ButtonStyle))
                         {
                             switch (Event.current.button)
                             {

@@ -116,39 +116,6 @@ namespace BDArmory.FX
             }
             if (!surfaceFire)
             {
-                if (parentPart.GetComponent<ModuleSelfSealingTank>() != null)
-                {
-                    ModuleSelfSealingTank FBX;
-                    FBX = parentPart.GetComponent<ModuleSelfSealingTank>();
-                    FBX.Extinguishtank();
-                    if (FBX.InertTank) burnTime = 0.01f; //check is looking for > 0, value of 0 not getting caught.
-                    /*
-                    if (FBX.FireBottles > 0)
-                    {
-                        //FBX.FireBottles -= 1;
-                        if (engine != null && engine.EngineIgnited && engine.allowRestart)
-                        {
-                            engine.Shutdown();
-                            enginerestartTime = Time.time;
-                        }
-                        burnTime = 4;
-                        Debug.Log("[FireFX] firebottles remaining in " + parentPart.name + ": " + FBX.FireBottles);
-                    }
-                    else
-                    {
-                        if (engine != null && engine.EngineIgnited && engine.allowRestart)
-                        {
-                            if (parentPart.vessel.verticalSpeed < 30) //not diving/trying to climb. With the vessel registry, could also grab AI state to add a !evading check
-                            {
-                                engine.Shutdown();
-                                enginerestartTime = Time.time + 5;
-                                burnTime = 10;
-                            }
-                            //though if it is diving, then there isn't a second call to cycle engines. Add an Ienumerator to check once every couple sec?
-                        }
-                    }
-                    */
-                }
             }
             parentBeingDestroyed = false;
         }

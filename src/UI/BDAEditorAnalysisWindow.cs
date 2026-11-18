@@ -50,8 +50,6 @@ namespace BDArmory.UI
 
         void Start()
         {
-            AddToolbarButton();
-
             RadarUtils.SetupResources();
             GameEvents.onEditorShipModified.Add(OnEditorShipModifiedEvent);
         }
@@ -117,31 +115,14 @@ namespace BDArmory.UI
             RadarUtils.CleanupResources();
             HideToolbarGUINow();
 
-            if (toolbarButton)
-            {
-                ApplicationLauncher.Instance.RemoveModApplication(toolbarButton);
-                toolbarButton = null;
-            }
 
             if (cachedPolarPlot != null) Destroy(cachedPolarPlot);
         }
 
-        void AddToolbarButton()
+        public void ToggleWindow()
         {
-            if (!HighLogic.LoadedSceneIsEditor) return;
-            StartCoroutine(ToolbarButtonRoutine());
-        }
-        IEnumerator ToolbarButtonRoutine()
-        {
-            if (toolbarButton) // Update the callbacks for the current instance.
-            {
-                toolbarButton.onTrue = ShowToolbarGUI;
-                toolbarButton.onFalse = HideToolbarGUI;
-                yield break;
-            }
-            yield return new WaitUntil(() => ApplicationLauncher.Ready && BDArmorySetup.toolbarButtonAdded); // Wait until after the main BDA toolbar button.
-            Texture buttonTexture = GameDatabase.Instance.GetTexture(BDArmorySetup.textureDir + "icon_rcs", false);
-            toolbarButton = ApplicationLauncher.Instance.AddModApplication(ShowToolbarGUI, HideToolbarGUI, Dummy, Dummy, Dummy, Dummy, ApplicationLauncher.AppScenes.SPH | ApplicationLauncher.AppScenes.VAB, buttonTexture);
+            if (showRcsWindow) HideToolbarGUI();
+            else ShowToolbarGUI();
         }
 
         public void ShowToolbarGUI()
@@ -186,7 +167,7 @@ namespace BDArmory.UI
             GUIUtils.PreventClickThrough(windowRect, "BDARCSLOCK");
             if (GUI.Button(new Rect(windowRect.width - 18, 2, 16, 16), " X", BDArmorySetup.CloseButtonStyle))
             {
-                toolbarButton.SetFalse();
+                HideToolbarGUI();
             }
 
             GUI.Label(new Rect(10, 40, 200, 20), $"Az {RadarUtils.editorRCSAspects[0, 0].ToString("0")}, El {RadarUtils.editorRCSAspects[0, 1].ToString("0")}", BDArmorySetup.SelectedButtonStyle);

@@ -51,11 +51,11 @@ namespace BDArmory.GameModes
                     {
                         if (alreadyburning != null)
                         {
-                            if (rubbertank == null || !rubbertank.InertTank) BulletHitFX.AttachFire(hitPoint, part, caliber, attacker);
+                            BulletHitFX.AttachFire(hitPoint, part, caliber, attacker);
                         }
                         else
                         {
-                            BulletHitFX.AttachLeak(hitLoc, part, caliber, explosivedamage, incendiary, attacker, rubbertank != null ? rubbertank.InertTank : false, colliderLocalHitPoint);
+                            BulletHitFX.AttachLeak(hitLoc, part, caliber, explosivedamage, incendiary, attacker, false, colliderLocalHitPoint);
                         }
                     }
                 }
@@ -553,11 +553,7 @@ namespace BDArmory.GameModes
                             }
                             //ScreenMessages.PostScreenMessage(crewMember.name + " killed by damage to " + part.vessel.name + part.partName + ".", 5.0f, ScreenMessageStyle.UPPER_LEFT);
                             //ScreenMessages.PostScreenMessage("Cockpit snipe on " + part.vessel.GetName() + "! " + crewMember.name + " killed!", 5.0f, ScreenMessageStyle.UPPER_CENTER);
-                            if (BDACompetitionMode.Instance)
-                            {
-                                BDACompetitionMode.Instance.competitionStatus.Add($"Cockpit snipe on {part.vessel.GetName()}! {crewMember.name} killed!");
-                                BDACompetitionMode.Instance.OnVesselModified(part.vessel);
-                            }
+                            if (part.vessel.isActiveVessel) ScreenMessages.PostScreenMessage($"Cockpit snipe on {part.vessel.GetName()}! {crewMember.name} killed!", 5.0f, ScreenMessageStyle.UPPER_CENTER);
                         }
                     }
                 }

@@ -12,7 +12,6 @@ using BDArmory.Settings;
 using BDArmory.Weapons;
 using BDArmory.Weapons.Missiles;
 using BDArmory.UI;
-using BDArmory.VesselSpawning;
 using BDArmory.Modules;
 
 namespace BDArmory.Utils
@@ -36,12 +35,7 @@ namespace BDArmory.Utils
         public static readonly HashSet<VesselType> IgnoredVesselTypes = [VesselType.Debris, VesselType.SpaceObject];
         public static readonly HashSet<VesselType> ValidVesselTypes = [VesselType.Plane, VesselType.Ship, VesselType.Rover, VesselType.Lander, VesselType.Base]; // Valid vessel types for competitions.
         static readonly HashSet<Type> ModuleTypesToSortByProximityToRoot = [
-            typeof(BDModulePilotAI),
-            typeof(BDModuleSurfaceAI),
-            typeof(BDModuleVTOLAI),
-            typeof(BDModuleOrbitalAI),
             typeof(MissileFire),
-            typeof(IBDAIControl)
         ];
 
         // Specialised registries to avoid the boxing/unboxing GC allocations on frequently used module types.
@@ -76,9 +70,6 @@ namespace BDArmory.Utils
             registryIBDWeapon ??= [];
             registryModuleEngines ??= [];
             registryModuleIntakes ??= [];
-            registryBDModulePilotAI ??= [];
-            registryBDModuleSurfaceAI ??= [];
-            registryIBDAIControl ??= [];
             registryModuleCommand ??= [];
             registryKerbalSeat ??= [];
             registryKerbalEVA ??= [];
@@ -156,16 +147,8 @@ namespace BDArmory.Utils
             if (!registry[vessel].ContainsKey(typeof(T))) { AddVesselModuleTypeToRegistry<T>(vessel); }
             if (ModuleTypesToSortByProximityToRoot.Contains(typeof(T)))
             {
-                if (typeof(T) == typeof(IBDAIControl)) // Specialisation due to IBDAI being an interface instead of a proper class.
-                {
-                    var modules = vessel.FindPartModulesImplementing<IBDAIControl>();
-                    registry[vessel][typeof(T)] = SortByProximityToRootIBDAI(ref modules).ConvertAll(m => m as UnityEngine.Object);
-                }
-                else
-                {
-                    var modules = vessel.FindPartModulesImplementing<T>().ConvertAll(m => m as PartModule);
-                    registry[vessel][typeof(T)] = SortByProximityToRoot(ref modules).ConvertAll(m => m as UnityEngine.Object);
-                }
+                var modules = vessel.FindPartModulesImplementing<T>().ConvertAll(m => m as PartModule);
+                registry[vessel][typeof(T)] = SortByProximityToRoot(ref modules).ConvertAll(m => m as UnityEngine.Object);
             }
             else { registry[vessel][typeof(T)] = vessel.FindPartModulesImplementing<T>().ConvertAll(m => m as UnityEngine.Object); }
             if (BDArmorySettings.DEBUG_OTHER) Debug.Log($"[BDArmory.VesselModuleRegistry]: Registry entry for {vessel.vesselName} updated to have {registry[vessel][typeof(T)].Count} modules of type {typeof(T).Name}.");
@@ -227,24 +210,6 @@ namespace BDArmory.Utils
             {
                 registryMissileBase[vessel] = vessel.FindPartModulesImplementing<MissileBase>();
                 if (BDArmorySettings.DEBUG_OTHER) Debug.Log($"[BDArmory.VesselModuleRegistry]: Specialised registry entry for {vessel.vesselName} updated to have {registryMissileBase[vessel].Count} modules of type {typeof(MissileBase).Name}.");
-            }
-            if (registryBDModulePilotAI.ContainsKey(vessel) && (partsAdded || registryBDModulePilotAI[vessel].Count > 0))
-            {
-                var pilotAIModules = vessel.FindPartModulesImplementing<BDModulePilotAI>();
-                registryBDModulePilotAI[vessel] = SortByProximityToRoot(ref pilotAIModules);
-                if (BDArmorySettings.DEBUG_OTHER) Debug.Log($"[BDArmory.VesselModuleRegistry]: Specialised registry entry for {vessel.vesselName} updated to have {registryBDModulePilotAI[vessel].Count} modules of type {typeof(BDModulePilotAI).Name}.");
-            }
-            if (registryBDModuleSurfaceAI.ContainsKey(vessel) && (partsAdded || registryBDModuleSurfaceAI[vessel].Count > 0))
-            {
-                var surfaceAIModules = vessel.FindPartModulesImplementing<BDModuleSurfaceAI>();
-                registryBDModuleSurfaceAI[vessel] = SortByProximityToRoot(ref surfaceAIModules);
-                if (BDArmorySettings.DEBUG_OTHER) Debug.Log($"[BDArmory.VesselModuleRegistry]: Specialised registry entry for {vessel.vesselName} updated to have {registryBDModuleSurfaceAI[vessel].Count} modules of type {typeof(BDModuleSurfaceAI).Name}.");
-            }
-            if (registryIBDAIControl.ContainsKey(vessel) && (partsAdded || registryIBDAIControl[vessel].Count > 0))
-            {
-                var IBDAIControls = vessel.FindPartModulesImplementing<IBDAIControl>();
-                registryIBDAIControl[vessel] = SortByProximityToRootIBDAI(ref IBDAIControls);
-                if (BDArmorySettings.DEBUG_OTHER) Debug.Log($"[BDArmory.VesselModuleRegistry]: Specialised registry entry for {vessel.vesselName} updated to have {registryIBDAIControl[vessel].Count} modules of type {typeof(IBDAIControl).Name}.");
             }
             if (registryModuleWeapon.ContainsKey(vessel) && (partsAdded || registryModuleWeapon[vessel].Count > 0))
             {
@@ -466,20 +431,6 @@ namespace BDArmory.Utils
         }
 
         /// <summary>
-        /// Specialisation for IBDAI due to it being an interface.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="modules"></param>
-        /// <returns></returns>
-        public static List<T> SortByProximityToRootIBDAI<T>(ref List<T> modules, Part root = null) where T : IBDAIControl
-        {
-            if (modules.Count == 0) return modules;
-            if (root == null) root = modules.First().vessel.rootPart;
-            modules = [.. modules.OrderBy(m => ProximityToRoot(m.part, root))];
-            return modules;
-        }
-
-        /// <summary>
         /// Get the proximity to the root part.
         /// </summary>
         /// <param name="part"></param>
@@ -550,81 +501,6 @@ namespace BDArmory.Utils
             }
             if (!registryMissileBase.ContainsKey(vessel)) { return GetMissileBases(vessel).FirstOrDefault(); }
             return registryMissileBase[vessel].FirstOrDefault();
-        }
-
-        public static List<BDModulePilotAI> GetBDModulePilotAIs(Vessel vessel)
-        {
-            if (vessel == null || !vessel.loaded) return [];
-            if (!registryBDModulePilotAI.ContainsKey(vessel))
-            {
-                var pilotAIModules = vessel.FindPartModulesImplementing<BDModulePilotAI>();
-                registryBDModulePilotAI.Add(vessel, SortByProximityToRoot(ref pilotAIModules));
-                vesselPartCounts[vessel] = vessel.Parts.Count;
-                if (BDArmorySettings.DEBUG_OTHER) Debug.Log($"[BDArmory.VesselModuleRegistry]: Vessel {vessel.vesselName} added to specialised {typeof(BDModulePilotAI).Name} registry with {registryBDModulePilotAI[vessel].Count} modules.");
-            }
-            return registryBDModulePilotAI[vessel];
-        }
-        public static BDModulePilotAI GetBDModulePilotAI(Vessel vessel, bool firstNonNull = false)
-        {
-            if (vessel == null || !vessel.loaded) return null;
-            if (firstNonNull)
-            {
-                foreach (var module in GetBDModulePilotAIs(vessel))
-                { if (module != null) return module; }
-                return null;
-            }
-            if (!registryBDModulePilotAI.ContainsKey(vessel)) { return GetBDModulePilotAIs(vessel).FirstOrDefault(); }
-            return registryBDModulePilotAI[vessel].FirstOrDefault();
-        }
-
-        public static List<BDModuleSurfaceAI> GetBDModuleSurfaceAIs(Vessel vessel)
-        {
-            if (vessel == null || !vessel.loaded) return [];
-            if (!registryBDModuleSurfaceAI.ContainsKey(vessel))
-            {
-                var surfaceAIModules = vessel.FindPartModulesImplementing<BDModuleSurfaceAI>();
-                registryBDModuleSurfaceAI.Add(vessel, SortByProximityToRoot(ref surfaceAIModules));
-                vesselPartCounts[vessel] = vessel.Parts.Count;
-                if (BDArmorySettings.DEBUG_OTHER) Debug.Log($"[BDArmory.VesselModuleRegistry]: Vessel {vessel.vesselName} added to specialised {typeof(BDModuleSurfaceAI).Name} registry with {registryBDModuleSurfaceAI[vessel].Count} modules.");
-            }
-            return registryBDModuleSurfaceAI[vessel];
-        }
-        public static BDModuleSurfaceAI GetBDModuleSurfaceAI(Vessel vessel, bool firstNonNull = false)
-        {
-            if (vessel == null || !vessel.loaded) return null;
-            if (firstNonNull)
-            {
-                foreach (var module in GetBDModuleSurfaceAIs(vessel))
-                { if (module != null) return module; }
-                return null;
-            }
-            if (!registryBDModuleSurfaceAI.ContainsKey(vessel)) { return GetBDModuleSurfaceAIs(vessel).FirstOrDefault(); }
-            return registryBDModuleSurfaceAI[vessel].FirstOrDefault();
-        }
-
-        public static List<IBDAIControl> GetIBDAIControls(Vessel vessel)
-        {
-            if (vessel == null || !vessel.loaded) return [];
-            if (!registryIBDAIControl.ContainsKey(vessel))
-            {
-                var IBDAIControls = vessel.FindPartModulesImplementing<IBDAIControl>();
-                registryIBDAIControl.Add(vessel, SortByProximityToRootIBDAI(ref IBDAIControls));
-                vesselPartCounts[vessel] = vessel.Parts.Count;
-                if (BDArmorySettings.DEBUG_OTHER) Debug.Log($"[BDArmory.VesselModuleRegistry]: Vessel {vessel.vesselName} added to specialised {typeof(IBDAIControl).Name} registry with {registryIBDAIControl[vessel].Count} modules.");
-            }
-            return registryIBDAIControl[vessel];
-        }
-        public static IBDAIControl GetIBDAIControl(Vessel vessel, bool firstNonNull = false)
-        {
-            if (vessel == null || !vessel.loaded) return null;
-            if (firstNonNull)
-            {
-                foreach (var module in GetIBDAIControls(vessel))
-                { if (module != null) return module; }
-                return null;
-            }
-            if (!registryIBDAIControl.ContainsKey(vessel)) { return GetIBDAIControls(vessel).FirstOrDefault(); }
-            return registryIBDAIControl[vessel].FirstOrDefault();
         }
 
         public static List<ModuleWeapon> GetModuleWeapons(Vessel vessel)
@@ -955,15 +831,9 @@ namespace BDArmory.Utils
         static Dictionary<Vessel, ActiveController> registry = [];
 
         public MissileFire WM { get; private set; } // Use this for accessing the primary WM. Use VesselModuleRegistry.GetMissileFires to get all WMs on a craft.
-        public IBDAIControl AI { get; private set; } // The active AI (if any are active) or the closest AI to the root.
         public bool VesselNamingDeconflictionHasBeenApplied { get; set; } = false; // Whether vessel naming deconfliction has been applied to this vessel or not.
         public string VesselName { get; set; } = null; // The vesselName of this vessel. This is to revert KSP's automatic renaming of vessels when we don't want it to.
 
-        // Note: If using these below, check that ai.pilotEnabled is true to see if it's the active AI.
-        public BDModulePilotAI PilotAI { get; private set; } // The primary or most recently active pilot AI.
-        public BDModuleSurfaceAI SurfaceAI { get; private set; } // The primary or most recently active surface AI.
-        public BDModuleVTOLAI VTOLAI { get; private set; } // The primary or most recently active VTOL AI.
-        public BDModuleOrbitalAI OrbitalAI { get; private set; } // The primary or most recently active orbital AI.
 
         bool updateRequired = true;
         public bool IsFighter = false; // Whether the vessel is a detached fighter.
@@ -986,18 +856,6 @@ namespace BDArmory.Utils
                 if (!wm.IsPrimaryWM) wm.ParentWM = WM;
             }
 
-            // Update the AIs.
-            // Find the primary of each type of AI: the first active one or the first one, sorted by proximity to the root.
-            // Then disable all but the overall primary (the first active primary in the order: pilot, surface, VTOL, orbital), reactivating it if necessary (as deactivating the others may have side effects).
-            PilotAI = VesselModuleRegistry.GetBDModulePilotAIs(Vessel).FirstOrDefault(ai => ai.pilotEnabled); // Select the first active one.
-            if (PilotAI == null) PilotAI = VesselModuleRegistry.GetBDModulePilotAI(Vessel); // Or default to the first one.
-            SurfaceAI = VesselModuleRegistry.GetBDModuleSurfaceAIs(Vessel).FirstOrDefault(ai => ai.pilotEnabled);
-            if (SurfaceAI == null) SurfaceAI = VesselModuleRegistry.GetBDModuleSurfaceAI(Vessel);
-            VTOLAI = VesselModuleRegistry.GetModules<BDModuleVTOLAI>(Vessel).FirstOrDefault(ai => ai.pilotEnabled);
-            if (VTOLAI == null) VTOLAI = VesselModuleRegistry.GetModule<BDModuleVTOLAI>(Vessel);
-            OrbitalAI = VesselModuleRegistry.GetModules<BDModuleOrbitalAI>(Vessel).FirstOrDefault(ai => ai.pilotEnabled);
-            if (OrbitalAI == null) OrbitalAI = VesselModuleRegistry.GetModule<BDModuleOrbitalAI>(Vessel);
-            UpdateAIModules(true);
 
             // Update the registry.
             registry = registry.Where(kvp => kvp.Key != null && kvp.Key == kvp.Value.Vessel).ToDictionary(kvp => kvp.Key, kvp => kvp.Value); // Remove any null or non-matching vessels.
@@ -1007,115 +865,8 @@ namespace BDArmory.Utils
             {
                 var vesselName = Vessel.GetName();
                 if (string.IsNullOrEmpty(vesselName)) vesselName = "new vessel";
-                Debug.Log($"[BDArmory.ActiveController]: ActiveController modules updated on {(string.IsNullOrEmpty(vesselName) ? Vessel.rootPart.partInfo.name : vesselName)} ({Vessel.persistentId}, {Vessel.vesselType}), WM: {WM != null}, PilotAI: {PilotAI != null}, SurfaceAI: {SurfaceAI != null}, VTOLAI: {VTOLAI != null}, OrbitalAI: {OrbitalAI != null}, AI: {AI}");
+                Debug.Log($"[BDArmory.ActiveController]: ActiveController modules updated on {(string.IsNullOrEmpty(vesselName) ? Vessel.rootPart.partInfo.name : vesselName)} ({Vessel.persistentId}, {Vessel.vesselType}), WM: {WM != null}");
             }
-            LoadedVesselSwitcher.Instance.UpdateWMs(); // Flag that the WMs in the VS need refreshing.
-        }
-
-        /// <summary>
-        /// Set AI to the first active AI in the order Pilot, Surface, VTOL, Orbital, otherwise the AI closest to the root part on the vessel.
-        /// AIs other than the primary one get deactivated.
-        /// In order to activate a lower priority AI, the higher priority ones need to be disabled first. SetActiveAI below takes care of this.
-        /// <param name="reactivate">Reactivate the active AI in case deactivating others disables some stuff.</param>
-        /// </summary>
-        public void UpdateAIModules(bool reactivate = false)
-        {
-            var vesselName = Vessel.GetName();
-            if (string.IsNullOrEmpty(vesselName)) vesselName = "new vessel";
-            if (PilotAI != null && PilotAI.pilotEnabled) AI = PilotAI;
-            else if (SurfaceAI != null && SurfaceAI.pilotEnabled) AI = SurfaceAI;
-            else if (VTOLAI != null && VTOLAI.pilotEnabled) AI = VTOLAI;
-            else if (OrbitalAI != null && OrbitalAI.pilotEnabled) AI = OrbitalAI;
-            else AI = VesselModuleRegistry.GetIBDAIControl(Vessel);
-            if (AI != null) // Then, deactivate any other AIs to avoid any control conflicts.
-            {
-                foreach (var ai in VesselModuleRegistry.GetIBDAIControls(Vessel))
-                {
-                    if (ai == null || ai == AI || !ai.pilotEnabled) continue;
-                    ScreenMessages.PostScreenMessage($"Deactivating non-primary {ai.aiType} on {vesselName}", 3);
-                    Debug.Log($"[BDArmory.ActiveController]: Deactivating non-primary {ai.aiType} ({ai.part.persistentId}) on {vesselName}");
-                    ai.DeactivatePilot();
-                }
-                if (reactivate && AI.pilotEnabled)
-                {
-                    AI.ActivatePilot(); // Reactivate the AI in case deactivating the others disabled any common stuff.
-                }
-            }
-            if (BDArmoryAIGUI.Instance != null) BDArmoryAIGUI.Instance.checkForAI = true; // Update the AI GUI on the next frame.
-            TimingManager.FixedUpdateAdd(TimingManager.TimingStage.Precalc, UpdateVesselType); // Reclassify the vessel if needed on the next frame.
-        }
-
-        /// <summary>
-        /// Set a specific AI as the active one, disabling all the rest.
-        /// This sets the AI as the primary of this AI type so long as it remains active through any vessel modifications.
-        /// </summary>
-        /// <param name="ai"></param>
-        public void SetActiveAI(IBDAIControl ai)
-        {
-            if (ai == null) return;
-            if (ai.vessel != Vessel) return;
-            foreach (var otherAI in VesselModuleRegistry.GetIBDAIControls(Vessel))
-            {
-                if (otherAI == ai) continue;
-                if (otherAI.pilotEnabled) otherAI.DeactivatePilot();
-            }
-            switch (ai.aiType) // Switch the primary of this type of AI to this one.
-            {
-                case AIType.PilotAI: PilotAI = ai as BDModulePilotAI; break;
-                case AIType.SurfaceAI: SurfaceAI = ai as BDModuleSurfaceAI; break;
-                case AIType.VTOLAI: VTOLAI = ai as BDModuleVTOLAI; break;
-                case AIType.OrbitalAI: OrbitalAI = ai as BDModuleOrbitalAI; break;
-            }
-            ai.ActivatePilot();
-            TimingManager.FixedUpdateAdd(TimingManager.TimingStage.Precalc, UpdateVesselType); // Reclassify the vessel if needed on the next frame.
-        }
-
-        /// <summary>
-        /// Update a vessel's type to match its AI (or lack thereof).
-        /// Vessels with a WM must be one of VesselModuleRegistry.ValidVesselTypes.
-        /// Note: unmanned probes are not considered a separate type from their manned equivalents.
-        /// </summary>
-        void UpdateVesselType()
-        {
-            TimingManager.FixedUpdateRemove(TimingManager.TimingStage.Precalc, UpdateVesselType); // Do it only once.
-            if (Vessel == null) return;
-            if (Vessel.vesselType == VesselType.EVA) return; // Don't mess with EVA kerbals as it breaks them.
-            var origType = Vessel.vesselType;
-            Vessel.StripTypeFromName();
-            if (AI != null)
-            {
-                switch (AI.aiType)
-                {
-                    case AIType.PilotAI:
-                    case AIType.VTOLAI:
-                        Vessel.vesselType = VesselType.Plane;
-                        break;
-                    case AIType.OrbitalAI:
-                        Vessel.vesselType = VesselType.Ship;
-                        break;
-                    case AIType.SurfaceAI:
-                        switch ((AI as BDModuleSurfaceAI).SurfaceType)
-                        {
-                            case AIUtils.VehicleMovementType.Land:
-                            case AIUtils.VehicleMovementType.Amphibious:
-                                Vessel.vesselType = VesselType.Rover;
-                                break;
-                            case AIUtils.VehicleMovementType.Stationary:
-                                Vessel.vesselType = VesselType.Lander;
-                                break;
-                            case AIUtils.VehicleMovementType.Water:
-                            case AIUtils.VehicleMovementType.Submarine:
-                                Vessel.vesselType = VesselType.Ship;
-                                break;
-                        }
-                        break;
-                }
-            }
-            else if (WM != null)
-            {
-                Vessel.vesselType = VesselType.Base; // Fixed weapon emplacement.
-            }
-            if (BDArmorySettings.DEBUG_OTHER && origType != Vessel.vesselType) Debug.Log($"[BDArmory.ActiveController]: Reclassifying vessel type of {Vessel.GetName()} from {origType} to {Vessel.vesselType}.");
         }
 
         /// <summary>
@@ -1150,33 +901,6 @@ namespace BDArmory.Utils
                     // Note: we don't need to assign the team as doing so for the parent applies it to all WM on the vessel.
                     if (WM.guardMode) WM.ToggleGuardMode();
                     if (WM.ParentWM.guardMode) WM.ToggleGuardMode();
-                    if (AI != null && WM.ParentWM.AI != null)
-                    {
-                        if (WM.ParentWM.AI.pilotEnabled)
-                        {
-                            AI.ActivatePilot();
-                            switch (WM.ParentWM.AI.currentCommand)
-                            {
-                                case PilotCommands.Free:
-                                    AI.ReleaseCommand();
-                                    break;
-                                case PilotCommands.Attack:
-                                    AI.CommandAttack(WM.ParentWM.AI.commandGPS);
-                                    break;
-                                case PilotCommands.FlyTo: // Not planning on attacking something, so just follow the leader.
-                                case PilotCommands.Waypoints: // If the parent was running waypoints, then just follow them.
-                                case PilotCommands.Follow: // Parent was following someone, we'll follow the parent as a sub-formation.
-                                    AI.CommandFollow(WM.ParentWM.wingCommander, WM.ParentWM.wingCommander.GetFreeWingIndex());
-                                    break;
-                                default:
-                                    Debug.LogError($"[BDArmory.VesselModuleRegistry]: Invalid PilotCommand!");
-                                    break;
-                            }
-                        }
-                        else AI.DeactivatePilot();
-                    }
-                    if (BDACompetitionMode.Instance.competitionIsActive || BDACompetitionMode.Instance.competitionStarting)
-                        BDACompetitionMode.Instance.AddToCompetitionWhenReady(WM, false); // We've already set the AI/WM state, so don't go weapons-free when adding them to the competition.
                     IsFighter = true; // Detached craft are "fighters".
                     WM.CheckMissiles();
                     WM.ParentWM = null; // Clear the parent WM at the end of frame in case the WM is not on the root part since losing the root part will trigger OnLoadVessel again.
@@ -1192,11 +916,6 @@ namespace BDArmory.Utils
         {
             if (vessel != Vessel) return;
             updateRequired = true;
-            if (WM != null && !string.IsNullOrEmpty(VesselName) && vessel.vesselName != VesselName)
-            {
-                if (BDArmorySettings.DEBUG_OTHER) Debug.Log($"[BDArmory.ActiveController]: Reverting name change of {VesselName} ({vessel.persistentId}) from {vessel.vesselName}");
-                vessel.vesselName = VesselName;
-            }
         }
 
         // The vessel name of new vessels gets assigned during the ObscenelyEarly timing phase.
@@ -1216,7 +935,6 @@ namespace BDArmory.Utils
         {
             TimingManager.FixedUpdateRemove(TimingManager.TimingStage.Precalc, UpdateModules);
             TimingManager.FixedUpdateRemove(TimingManager.TimingStage.ObscenelyEarly, GetVesselName);
-            TimingManager.FixedUpdateRemove(TimingManager.TimingStage.Precalc, UpdateVesselType);
             GameEvents.onVesselPartCountChanged.Remove(OnVesselPartCountChanged);
         }
 

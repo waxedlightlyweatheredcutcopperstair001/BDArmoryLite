@@ -368,20 +368,6 @@ namespace BDArmory.UI
                                         onScreenLabels.Add((new(guiPos.x + 16 * BDTISettings.ICONSCALE, guiPos.y - 19 * BDTISettings.ICONSCALE, 100, 32), $"Team: {wm.Current.Team.Name}", teamcolor, DropshadowStyle));
                                     }
 
-                                    if (BDTISettings.SCORE)
-                                    {
-                                        int Score = 0;
-
-                                        if (BDACompetitionMode.Instance.Scores.ScoreData.TryGetValue(wm.Current.vessel.vesselName, out var scoreData))
-                                            Score = scoreData.hits;
-                                        if (ContinuousSpawning.Instance.vesselsSpawningContinuously)
-                                        {
-                                            if (ContinuousSpawning.Instance.continuousSpawningScores.TryGetValue(wm.Current.vessel.vesselName, out var ctsScoreData))
-                                                Score += ctsScoreData.cumulativeHits;
-                                        }
-
-                                        onScreenLabels.Add((new(guiPos.x + 16 * BDTISettings.ICONSCALE, guiPos.y + 14 * BDTISettings.ICONSCALE, 100, 32), "Score: " + Score, teamcolor, DropshadowStyle));
-                                    }
                                     float dist = BDAMath.Sqrt(distSqr);
                                     string UIdistStr = dist > 1000f ? $"{1e-3f * dist:0.00}km" : $"{dist:0.0}m";
                                     if (BDTISettings.HEALTHBAR)
@@ -408,13 +394,11 @@ namespace BDArmory.UI
                                     if (BDTISettings.TELEMETRY)
                                     {
                                         string selectedWeapon = "Using: " + wm.Current.selectedWeaponString;
-                                        string AIstate = wm.Current.AI != null ? $"Pilot {wm.Current.AI.currentStatus}" : "No AI";
 
                                         onScreenLabels.Add((new(guiPos.x + 32 * BDTISettings.ICONSCALE, guiPos.y + 32, 200, 32), selectedWeapon, teamcolor, DropshadowStyle));
-                                        onScreenLabels.Add((new(guiPos.x + 32 * BDTISettings.ICONSCALE, guiPos.y + 48, 200, 32), AIstate, teamcolor, DropshadowStyle));
                                         if (wm.Current.isFlaring || wm.Current.isChaffing || wm.Current.isECMJamming)
                                         {
-                                            onScreenLabels.Add((new(guiPos.x + 32 * BDTISettings.ICONSCALE, guiPos.y + 64, 200, 32), "Deploying Counter-Measures", teamcolor, DropshadowStyle));
+                                            onScreenLabels.Add((new(guiPos.x + 32 * BDTISettings.ICONSCALE, guiPos.y + 48, 200, 32), "Deploying Counter-Measures", teamcolor, DropshadowStyle));
                                         }
                                         onScreenLabels.Add((new(guiPos.x - 96 * BDTISettings.ICONSCALE, guiPos.y + 64, 100, 32), $"Speed: {wm.Current.vessel.speed:0.0}m/s", teamcolor, DropshadowStyle));
                                         onScreenLabels.Add((new(guiPos.x - 96 * BDTISettings.ICONSCALE, guiPos.y + 80, 100, 32), $"Alt: {wm.Current.vessel.altitude:0.0}m", teamcolor, DropshadowStyle));
