@@ -52,6 +52,7 @@ the pooled explosion objects it watches.
 |---|---|
 | `../BDArmory-1.13.1/` | BDArmory Continued, tag `v1.13.1.0` (https://github.com/BrettRyland/BDArmory); the packager uses `BDArmory/Distribution/GameData/BDArmory` |
 | `../North_Kerbin_Dynamic_Renewed-0.1.1/gameData/` | North Kerbin Dynamics Renewed 0.1.1 download (its `NKDR` folder) |
+| `../BDArmory-Extended-1.5.3/` | BDArmory Extended, tag `1.5.3` (https://github.com/BrettRyland/BDArmory-Extended); the packager uses its `BDArmoryExtended` folder |
 
 ## Releases and version history
 

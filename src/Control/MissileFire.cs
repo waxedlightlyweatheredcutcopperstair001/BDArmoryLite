@@ -129,6 +129,18 @@ namespace BDArmory.Control
         }
 
         float triggerTimer;
+
+        /// <summary>
+        /// BDArmory Lite: how far the fire key has been held towards launching the selected missile or bomb (0 to 1),
+        /// or -1 when no launch is pending. Read by UI/LaunchWarning for the hold-to-launch beeps and bar.
+        /// </summary>
+        public float LaunchHoldProgress { get; private set; } = -1;
+
+        void UpdateLaunchHoldProgress()
+        {
+            float holdTime = Mathf.Max(BDArmorySettings.TRIGGER_HOLD_TIME, 0.01f);
+            LaunchHoldProgress = (triggerTimer > 0 && triggerTimer <= holdTime && !hasSingleFired && !MapView.MapIsEnabled) ? triggerTimer / holdTime : -1;
+        }
         Dictionary<string, int> rippleGunCount = [];
         Dictionary<string, int> gunRippleIndex = [];
         public float gunRippleRpm;
@@ -1713,12 +1725,13 @@ namespace BDArmory.Control
 
             if (vessel.isActiveVessel)
             {
+                LaunchHoldProgress = -1; // Set again below while a missile launch is pending.
                 if (!guardMode) // Manual firing.)
                 {
                     bool missileTriggerHeld = false;
                     if (!CheckMouseIsOnGui() && isArmed && BDInputUtils.GetKey(BDInputSettingsFields.WEAP_FIRE_KEY) && !ModuleTargetingCamera.IsSlewing)
                     {
-                        triggerTimer += Time.fixedDeltaTime;
+                        triggerTimer += Time.deltaTime; // BDArmory Lite: real seconds (upstream added fixedDeltaTime every frame, so the hold time depended on the frame rate).
                         missileTriggerHeld = true;
                     }
                     else
@@ -1749,6 +1762,7 @@ namespace BDArmory.Control
                     {
                         canRipple = true;
                         FireMissileManually(true);
+                        UpdateLaunchHoldProgress();
                     }
                     else if (selectedWeapon != null &&
                              ((selectedWeapon.GetWeaponClass() == WeaponClasses.Gun

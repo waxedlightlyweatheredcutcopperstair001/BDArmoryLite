@@ -1,17 +1,20 @@
-# BDArmory Lite 2.0.0
+# BDArmory Lite 2.1.0
 
 A streamlined BDArmory for KSP 1.12.x: guns, missiles, bombs, radar, targeting, countermeasures,
 armour plates and the weapon manager, with the North Kerbin Dynamics Renewed (NKDR) weapons
-built in, a dark ZTheme-style interface, and none of the tournament machinery.
+and BDArmory Extended weapons built in, a dark ZTheme-style interface, and none of the tournament
+machinery.
 
 Based on BDArmory Continued 1.13.1 (BrettRyland and contributors) and North Kerbin Dynamics
-Renewed 0.1.1 (Harpwner and contributors).
+Renewed 0.1.1 (Harpwner and contributors) and BDArmory Extended 1.5.3 (SuicidalInsanity and
+DocNappers; some missile models by Toonu).
 
 ## Install
 
-1. Remove any existing `GameData/BDArmory` and `GameData/NKDR` folders. BDArmory Lite replaces
-   both and cannot be installed alongside them.
-2. Copy the `BDArmoryLite` folder into `GameData`. NKDR is inside it, in `BDArmoryLite/NKDR`.
+1. Remove any existing `GameData/BDArmory`, `GameData/NKDR` and `GameData/BDArmoryExtended`
+   folders. BDArmory Lite replaces all three and cannot be installed alongside them.
+2. Copy the `BDArmoryLite` folder into `GameData`. NKDR and BDArmory Extended are inside it, in
+   `BDArmoryLite/NKDR` and `BDArmoryLite/BDArmoryExtended`.
 
 Required: **ModuleManager**.
 Optional: **Physics Range Extender** (lets you fight beyond KSP's ~2.5 km physics range),
@@ -22,6 +25,23 @@ don't draw on top of each other (sound and damage are unchanged). This follows V
 Explosion FX's settings: turn its explosions or "replace stock visuals" off, or watch a blast from
 beyond its effect distance, and BDArmory's visuals come back. There is also a toggle under
 Settings > Gameplay.
+
+## New in 2.1.0
+
+- **All 152 BDArmory Extended 1.5.3 parts:** fixed guns and cannons (20 mm to 203 mm), lasers,
+  more turrets and CIWS, torpedoes and launchers, missiles, missile pods, magazines and VLS cells,
+  small warheads, scalable ammo boxes and drums, strip countermeasure dispensers, a cloaking
+  device, a drop tank and a repulsor. They're sorted into the same editor groups as everything
+  else (fixed lasers go under Guns, the drop tank under Bombs). The repulsor sits in its stock
+  category; toggle it with its action and set the hover height in its part menu.
+- **Missile launch warning:** missiles and bombs launch when the fire key has been held for the
+  launch hold time (Settings > Gameplay). While you hold it, the weapon beeps with a rising
+  pitch and a "Hold to launch" bar fills below the centre of the screen; let go early to cancel.
+  It uses the UI volume and can be turned off next to the hold time.
+- The launch hold time is now measured in real seconds. It used to depend on your frame rate,
+  so at high frame rates missiles launched sooner than the setting said.
+- Fixed BDArmory Extended's broken paths for the 57 mm gun sound, the assault MG smoke, and the
+  Homing Hydra and SRAAM submunitions.
 
 ## New in 2.0.0
 
@@ -104,4 +124,5 @@ with it.
 
 BDArmory is CC-BY-SA 2.0 (see `BDArmory-License.txt` and `BDArmory-Credits.txt`).
 North Kerbin Dynamics Renewed is CC BY-SA 4.0 (see `NKDR-Licence.txt`).
+BDArmory Extended is CC BY-SA 4.0 (see `BDArmoryExtended-License.txt`).
 This combined, modified work is distributed under CC BY-SA 4.0 with credit to both.

@@ -96,6 +96,7 @@ namespace BDArmory.Settings
         [BDAPersistentSettingsField] public static int MAX_NUM_BULLET_DECALS = 200;
         [BDAPersistentSettingsField] public static int CAMERA_SWITCH_FREQUENCY = 10;                    // Controls the minimum time between automated camera switches
         [BDAPersistentSettingsField] public static float TRIGGER_HOLD_TIME = 0.2f;
+        [BDAPersistentSettingsField] public static bool LAUNCH_WARNING = true;                 // BDArmory Lite: beep and show a bar while the fire key is held to launch a missile or bomb.
         [BDAPersistentSettingsField] public static float BDARMORY_UI_VOLUME = 0.35f;
         [BDAPersistentSettingsField] public static float BDARMORY_WEAPONS_VOLUME = 0.45f;
         [BDAPersistentSettingsField] public static float MAX_GUARD_VISUAL_RANGE = 200000f;

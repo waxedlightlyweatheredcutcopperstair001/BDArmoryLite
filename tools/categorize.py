@@ -55,16 +55,18 @@ def classify(text):
         return 'Control'
     if 'ModuleWeapon' in mods:
         if weapon_type == 'laser':
-            return 'LaserTurrets'  # BDArmory Lite has no fixed lasers; any laser counts as a laser turret.
+            return 'LaserTurrets' if turret else 'Guns'  # Fixed lasers (BDArmory Extended) go with the guns.
         if weapon_type == 'rocket':
             return 'RocketTurrets' if turret else 'RocketPods'
         return 'GunTurrets' if turret else 'Guns'
     if 'MissileTurret' in mods or mods & MOUNT_MODULES or field(text, 'name') in MOUNT_PARTS:
         return 'MissileTurrets'  # Turrets, rails, bays and launch tubes.
     if 'MissileLauncher' in mods or 'BDModularGuidance' in mods or 'MultiMissileLauncher' in mods:
+        if field(text, 'name') == 'bahaDroptank':
+            return 'Bombs'  # BDArmory Extended's drop tank: a fuel tank released like a bomb.
         missile_type = (field(text, 'missileType') or '').lower()
         return 'Bombs' if missile_type == 'bomb' else 'Missiles'  # Torpedoes go with missiles.
-    if 'BDExplosivePart' in mods or 'BDModuleNuke' in mods or 'ModuleEMP' in mods:
+    if mods & {'BDExplosivePart', 'BDCustomWarhead', 'BDModuleNuke', 'ModuleEMP'}:
         return 'Bombs'  # Standalone warheads (e.g. the small High Explosive Warhead).
     if mods & {'ModuleRadar', 'ModuleSpaceRadar', 'ModuleIRST', 'RadarWarningReceiver', 'ModuleTargetingCamera'}:
         return 'Radars'
@@ -79,6 +81,6 @@ def classify(text):
     res = resources(text)
     if res & CM_RESOURCES:
         return 'Countermeasures'  # Flare/chaff refill boxes.
-    if 'ModuleAmmoSwitch' in mods or res & AMMO_RESOURCES:
+    if 'ModuleAmmoSwitch' in mods or 'ModuleMissileMagazine' in mods or res & AMMO_RESOURCES:
         return 'Ammo'
     return None

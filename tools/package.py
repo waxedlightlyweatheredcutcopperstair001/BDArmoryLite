@@ -1,9 +1,11 @@
-"""Assemble GameData/BDArmoryLite (with NKDR in BDArmoryLite/NKDR) from BDArmory 1.13.1, the NKDR download and the built DLL.
+"""Assemble GameData/BDArmoryLite (with NKDR in BDArmoryLite/NKDR and BDArmory Extended in BDArmoryLite/BDArmoryExtended)
+from BDArmory 1.13.1, the NKDR download, BDArmory Extended 1.5.3 and the built DLL.
 
-Asset paths are rewritten from BDArmory/... and NKDR/... to BDArmoryLite/... and BDArmoryLite/NKDR/....
+Asset paths are rewritten from BDArmory/..., NKDR/... and BDArmoryExtended/... to BDArmoryLite/..., BDArmoryLite/NKDR/...
+and BDArmoryLite/BDArmoryExtended/....
 Every weapon part is also given an editor subcategory (see tools/categorize.py) for VAB Organizer.
 
-Usage: python3 -I tools/package.py [path/to/North_Kerbin_Dynamic_Renewed-0.1.1/gameData] [path/to/BDArmory-1.13.1/BDArmory/Distribution/GameData]
+Usage: python3 -I tools/package.py [NKDR gameData folder] [BDArmory 1.13.1 Distribution/GameData folder] [BDArmory-Extended folder]
 
 Everything under GameData/BDArmoryLite is regenerated from scratch on each run, except for
 files listed in OVERLAY (hand-written files in tools/overlay/ that are copied over the top).
@@ -18,6 +20,10 @@ SRC = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(ROOT), 
 BDA_SRC = sys.argv[2] if len(sys.argv) > 2 else os.path.join(os.path.dirname(ROOT), 'BDArmory-1.13.1', 'BDArmory', 'Distribution', 'GameData')
 BDA = os.path.join(BDA_SRC, 'BDArmory')
 NKDR = os.path.join(SRC, 'NKDR')
+BDAX_SRC = sys.argv[3] if len(sys.argv) > 3 else os.path.join(os.path.dirname(ROOT), 'BDArmory-Extended-1.5.3')
+BDAX = os.path.join(BDAX_SRC, 'BDArmoryExtended')
+BDAX_DIRS = ['Parts', 'Defs', 'Localization', 'Patches']
+BDAX_EXCLUDE = ['Patches/VABOrganiser.cfg']  # BDArmory Extended's own VAB Organizer groups; BDArmory Lite writes its own.
 OUT_ROOT = os.path.join(ROOT, 'GameData')
 OUT = os.path.join(OUT_ROOT, 'BDArmoryLite')
 EXTRAS = os.path.join(ROOT, 'Extras')
@@ -124,9 +130,16 @@ def rewrite_paths(text):
     """Point asset paths at the merged mod folder."""
     text = re.sub(r'(?<![\w/])BDArmory/', 'BDArmoryLite/', text)
     text = re.sub(r'(?<![\w/])NKDR/', 'BDArmoryLite/NKDR/', text)
+    text = re.sub(r'(?<![\w/])BDArmoryExtended/', 'BDArmoryLite/BDArmoryExtended/', text)
     text = text.replace('BDArmoryLite/parts/', 'BDArmoryLite/Parts/')  # NKDR used the wrong case for BDArmory's Parts folder.
     text = text.replace('BDArmoryLite/NKDR/Explosion_Huge', 'BDArmoryLite/NKDR/effects/Explosion_Huge')  # Broken path in the K-12 Cloudmaker.
     text = text.replace('ammoName = 50Californium bullet', 'ammoName = 50CalAmmo')  # NKDR's .50cal(ifornium) turret named an ammo resource that doesn't exist.
+    # BDArmory Extended 1.5.3 moved these parts into subfolders without updating the paths.
+    for old, new in [('BDArmoryExtended/Parts/AntitankGun/', 'BDArmoryExtended/Parts/FixedGuns/AntitankGun/'),
+                     ('BDArmoryExtended/Parts/AssaultMG/', 'BDArmoryExtended/Parts/FixedGuns/AssaultMG/'),
+                     ('BDArmoryExtended/Parts/Missiles/HomingHydra/', 'BDArmoryExtended/Parts/Missiles/ShortRange/HomingHydra/'),
+                     ('BDArmoryExtended/Parts/Missiles/SRAAM/', 'BDArmoryExtended/Parts/Missiles/Legacy/SRAAM/')]:
+        text = text.replace('BDArmoryLite/' + old, 'BDArmoryLite/' + new)
     return text
 
 
@@ -174,8 +187,9 @@ def write_vabo_subcategories(path):
 
 
 def main():
-    if not os.path.isdir(BDA) or not os.path.isdir(NKDR):
-        sys.exit(f'Source folders not found under {SRC}')
+    for d in (BDA, NKDR, BDAX):
+        if not os.path.isdir(d):
+            sys.exit(f'Source folder not found: {d}')
     if not os.path.isfile(DLL):
         sys.exit(f'{DLL} not found: run ./build.sh first')
     shutil.rmtree(OUT_ROOT, ignore_errors=True)
@@ -190,6 +204,12 @@ def main():
         copy_tree(os.path.join(NKDR, d), os.path.join(OUT, 'NKDR', d), 'NKDR/' + d)
     shutil.copy2(os.path.join(NKDR, 'NKD_Bullets.cfg'), os.path.join(OUT, 'NKDR', 'NKD_Bullets.cfg'))
     shutil.copy2(os.path.join(NKDR, 'Licences.txt'), os.path.join(OUT, 'NKDR-Licence.txt'))
+    for d in BDAX_DIRS:
+        copy_tree(os.path.join(BDAX, d), os.path.join(OUT, 'BDArmoryExtended', d), d)
+    for e in BDAX_EXCLUDE:
+        os.remove(os.path.join(OUT, 'BDArmoryExtended', e))
+    shutil.copy2(os.path.join(BDAX, 'License.txt'), os.path.join(OUT, 'BDArmoryExtended-License.txt'))
+    shutil.copy2(os.path.join(BDAX, 'changelog.txt'), os.path.join(OUT, 'BDArmoryExtended', 'changelog.txt'))
     os.makedirs(os.path.join(OUT, 'Plugins'))
     shutil.copy2(DLL, os.path.join(OUT, 'Plugins', 'BDArmory.dll'))
 
@@ -202,6 +222,7 @@ def main():
 
     stats = {'paths': 0, 'modules': 0, 'patches': 0}
     categorize.load_ammo_resources(read(os.path.join(OUT, 'Resources', 'BDAmmo_Universal.cfg'))[0])
+    categorize.load_ammo_resources(read(os.path.join(OUT, 'BDArmoryExtended', 'Defs', 'Resources.cfg'))[0])
     categorized = {}
     for dirpath, _, filenames in os.walk(OUT):
         for f in filenames:

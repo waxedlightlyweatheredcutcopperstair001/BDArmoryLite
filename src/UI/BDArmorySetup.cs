@@ -2340,7 +2340,8 @@ namespace BDArmory.UI
                     BDArmorySettings.VEFX_HIDE_BDA_EXPLOSIONS = SettingToggle("Let Volumetric Explosion FX replace explosion visuals", BDArmorySettings.VEFX_HIDE_BDA_EXPLOSIONS);
                 BDArmorySettings.BULLET_WATER_DRAG = SettingToggle("Water slows bullets and rockets", BDArmorySettings.BULLET_WATER_DRAG);
                 BDArmorySettings.BOMB_CLEARANCE_CHECK = SettingToggle("Check bomb clearance before release", BDArmorySettings.BOMB_CLEARANCE_CHECK);
-                BDArmorySettings.TRIGGER_HOLD_TIME = SettingSlider("Trigger hold time", BDArmorySettings.TRIGGER_HOLD_TIME, 0.02f, 1f, 0.02f, $"{BDArmorySettings.TRIGGER_HOLD_TIME:0.00}s");
+                BDArmorySettings.TRIGGER_HOLD_TIME = SettingSlider("Missile launch hold time", BDArmorySettings.TRIGGER_HOLD_TIME, 0.02f, 1f, 0.02f, $"{BDArmorySettings.TRIGGER_HOLD_TIME:0.00}s");
+                BDArmorySettings.LAUNCH_WARNING = SettingToggle("Missile launch warning (beeps and a bar while holding fire)", BDArmorySettings.LAUNCH_WARNING, 1);
                 GUILayout.Space(4);
             }
 
