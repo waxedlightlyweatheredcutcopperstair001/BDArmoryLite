@@ -2224,7 +2224,7 @@ namespace BDArmory.Weapons.Missiles
                     UpdateGuidance();
                     if (TimeIndex > fuzeArmingDelay)
                     {
-                        CheckAltitudeDetonation();
+                        if (IsArmed) CheckAltitudeDetonation(); // BDArmory Lite: wait out the launch safety window rather than being destroyed as a dud inside it.
                         CheckDetonationState(preventProxyArming: (proximityFuzeInhibitionAlt > 0 && vessel.radarAltitude < proximityFuzeInhibitionAlt)); // this needs to be after UpdateGuidance()
                         CheckDetonationDistance();
                     }
@@ -4315,7 +4315,7 @@ namespace BDArmory.Weapons.Missiles
         {
             if (p != part) return;
             HasDied = true;
-            Detonate();
+            Detonate(force: contactArmed && !HasFired); // A contact-armed missile killed by the impact itself still goes off (warhead modules handle their own; this covers EMP/legacy/kinetic).
             BDATargetManager.FiredMissiles.Remove(this);
             GameEvents.onPartDie.Remove(PartDie);
             Destroy(this); // If this is the active vessel, then KSP doesn't destroy it until we switch away, but we want to get rid of the MissileBase straight away.
