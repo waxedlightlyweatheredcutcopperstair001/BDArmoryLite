@@ -1,4 +1,4 @@
-﻿namespace BDArmory.UI
+namespace BDArmory.UI
 {
     /// <summary>
     /// Implement this interface for your module to appear in the weapon manager modules list

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 
 using BDArmory.Extensions;
@@ -28,10 +28,11 @@ namespace BDArmory.Guidances
 
             var pendingDistance = _originalDistance - surfaceDistanceVector.magnitude;
 
-            if (missile.TimeIndex < 1)
-            {
-                return missile.vessel.CoM + missile.vessel.Velocity() * 10;
-            }
+            // Not really necessary, especially with the new controller, if desired it can be implemented via guidance delay
+            //if (missile.TimeIndex < 1)
+            //{
+            //    return missile.vessel.CoM + missile.vessel.Velocity() * 10;
+            //}
 
             Vector3 agmTarget;
 
@@ -96,12 +97,14 @@ namespace BDArmory.Guidances
 
         private double CalculateFreeFallTime(MissileBase missile, int predictionTime = 10)
         {
-            double vi = CalculateFutureVerticalSpeed(missile, predictionTime) * -1;
+            double vi = -CalculateFutureVerticalSpeed(missile, predictionTime);
             double a = 9.80665f * missile.BallisticOverShootFactor;
             double d = missile.vessel.GetFutureAltitude(predictionTime);
 
-            double time1 = (-vi + Math.Sqrt(vi * vi - 4 * (0.5f * a) * (-d))) / a;
-            double time2 = (-vi - Math.Sqrt(vi * vi - 4 * (0.5f * a) * (-d))) / a;
+            double det = Math.Sqrt(vi * vi - 4 * (0.5f * a) * (-d));
+
+            double time1 = (-vi + det) / a;
+            double time2 = (-vi - det) / a;
 
             return Math.Max(time1, time2);
         }

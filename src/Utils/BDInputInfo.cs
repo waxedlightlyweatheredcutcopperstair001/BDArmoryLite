@@ -1,4 +1,4 @@
-﻿namespace BDArmory.Utils
+namespace BDArmory.Utils
 {
     public struct BDInputInfo
     {

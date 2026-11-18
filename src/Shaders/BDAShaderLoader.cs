@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
-using UniLinq;
+using System.Linq;
 using UnityEngine;
 
 namespace BDArmory.Shaders
@@ -44,7 +44,7 @@ namespace BDArmory.Shaders
 
         private void Awake()
         {
-            _bundlePath = Path.Combine(KSPUtil.ApplicationRootPath, "GameData", "BDArmoryLite", "AssetBundles");
+            _bundlePath = Path.GetFullPath(Path.Combine(KSPUtil.ApplicationRootPath, "GameData", "BDArmory", "AssetBundles"));
         }
 
         private void Start()

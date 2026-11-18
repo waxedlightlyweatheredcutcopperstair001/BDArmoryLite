@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 using System.Collections.Generic;
-using UniLinq;
+using System.Linq;
 using UnityEngine;
 
 using BDArmory.Competition;
@@ -11,10 +11,11 @@ using BDArmory.Settings;
 using BDArmory.Utils;
 using BDArmory.Weapons;
 using BDArmory.UI;
+using BDArmory.Weapons.Missiles;
 
 namespace BDArmory.Ammo
 {
-    class ModuleCASE : PartModule, IPartMassModifier, IPartCostModifier
+    class ModuleCASE : BDAPartModule, IPartMassModifier, IPartCostModifier
     {
         public static Dictionary<int, ObjectPool> detSpheres = new Dictionary<int, ObjectPool>();
         GameObject visSphere;
@@ -63,7 +64,7 @@ namespace BDArmory.Ammo
         UI_FloatRange(minValue = 0f, maxValue = 2f, stepIncrement = 1f, scene = UI_Scene.All, affectSymCounterparts = UI_Scene.All)]
         public float CASELevel = 0; //tier of ammo storage. 0 = nothing, ammosplosion; 1 = base, ammosplosion contained(barely), 2 = blast safely shunted outside, minimal damage to surrounding parts
 
-        [KSPField(isPersistant = true, guiActive = false, guiActiveEditor = true, guiName = "#LOC_BDArmory_CASE_Sim"),//Cellular Ammo Storage Equipment Tier
+        [KSPField(guiActive = false, guiActiveEditor = true, guiName = "#LOC_BDArmory_CASE_Sim"),//Detonation Sim
 UI_FloatRange(minValue = 0f, maxValue = 100, stepIncrement = 0.5f, scene = UI_Scene.All, affectSymCounterparts = UI_Scene.All)]
         public float blastSim = 0;
 
@@ -74,15 +75,18 @@ UI_FloatRange(minValue = 0f, maxValue = 100, stepIncrement = 0.5f, scene = UI_Sc
 
         static RaycastHit[] raycastHitBuffer = new RaycastHit[10]; // This gets enlarged as needed and is shared amongst all ModuleCASE instances.
 
+        ModuleAmmoMagazine AdjustableBin = null;
+
         public void Start()
         {
             if (HighLogic.LoadedSceneIsEditor)
             {
+                AdjustableBin = part.FindModuleImplementing<ModuleAmmoMagazine>();
                 var internalmag = part.FindModuleImplementing<ModuleWeapon>();
                 if (internalmag != null)
                 {
-                    Fields["CASELevel"].guiActiveEditor = false;
-                    Fields["CASEmass"].guiActiveEditor = false;
+                    Fields[nameof(CASELevel)].guiActiveEditor = false;
+                    Fields[nameof(CASEmass)].guiActiveEditor = false;
                 }
                 else
                 {
@@ -92,7 +96,7 @@ UI_FloatRange(minValue = 0f, maxValue = 100, stepIncrement = 0.5f, scene = UI_Sc
                             if (resource.Current == null) continue;
                             resourceAmount.Add(resource.Current.maxAmount);
                         }
-                    UI_FloatRange ATrangeEditor = (UI_FloatRange)Fields["CASELevel"].uiControlEditor;
+                    UI_FloatRange ATrangeEditor = (UI_FloatRange)Fields[nameof(CASELevel)].uiControlEditor;
                     ATrangeEditor.onFieldChanged = CASESetup;
                     origMass = part.mass;
                     //origScale = part.rescaleFactor;
@@ -174,71 +178,107 @@ UI_FloatRange(minValue = 0f, maxValue = 100, stepIncrement = 0.5f, scene = UI_Sc
             CASEcost = (CASELevel * 1000);
             //part.transform.localScale = (Vector3.one * (origScale + (CASELevel/10)));
             //Debug.Log("[BDArmory.ModuleCASE] part.mass = " + part.mass + "; CASElevel = " + CASELevel + "; CASEMass = " + CASEmass + "; Scale = " + part.transform.localScale);
-
-            if (Case2 && CASELevel != 2)
+            if (!AdjustableBin)
             {
-                int i = 0;
-                using (IEnumerator<PartResource> resource = part.Resources.GetEnumerator())
-                    while (resource.MoveNext())
-                    {
-                        if (resource.Current == null) continue;
-                        //if (resource.Current.maxAmount < 80) //original value < 100, at risk of fractional amount
-                        {
-                            resource.Current.maxAmount = resourceAmount[i];
-                        }
-                        //else resource.Current.maxAmount = Math.Floor(resource.Current.maxAmount * 1.25);
-                        i++;
-                    }
-            }
-            if (!Case2 && CASELevel == 2)
-            {
-                using (IEnumerator<PartResource> resource = part.Resources.GetEnumerator())
-                    while (resource.MoveNext())
-                    {
-                        if (resource.Current == null) continue;
-                        resource.Current.maxAmount *= 0.8;
-                        resource.Current.maxAmount = Math.Floor(resource.Current.maxAmount);
-                        resource.Current.amount = Math.Min(resource.Current.amount, resource.Current.maxAmount);
-                    }
-            }
-            using (List<Part>.Enumerator pSym = part.symmetryCounterparts.GetEnumerator())
-                while (pSym.MoveNext())
+                if (Case2 && CASELevel != 2)
                 {
-                    if (pSym.Current == null) continue;
-
-                    var CASE = pSym.Current.FindModuleImplementing<ModuleCASE>();
-                    if (CASE == null) continue;
-                    CASE.externallyCalled = true;
-                    CASE.CASELevel = CASELevel;
-                    CASE.CASEmass = CASEmass;
-                    CASE.CASEcost = CASEcost;
-
-                    if (CASE.Case2 && CASE.CASELevel != 2)
-                    {
-                        using (IEnumerator<PartResource> resource = pSym.Current.Resources.GetEnumerator())
-                            while (resource.MoveNext())
+                    int i = 0;
+                    using (IEnumerator<PartResource> resource = part.Resources.GetEnumerator())
+                        while (resource.MoveNext())
+                        {
+                            if (resource.Current == null) continue;
+                            //if (resource.Current.maxAmount < 80) //original value < 100, at risk of fractional amount
                             {
-                                if (resource.Current == null) continue;
-                                resource.Current.maxAmount = Math.Floor(resource.Current.maxAmount * 1.25);
-                                resource.Current.amount = Math.Min(resource.Current.amount, resource.Current.maxAmount);
+                                resource.Current.maxAmount = resourceAmount[i];
+                                GUIUtils.RefreshPAWResource(part, resource.Current);
                             }
-                    }
-                    if (!CASE.Case2 && CASE.CASELevel == 2)
-                    {
-                        using (IEnumerator<PartResource> resource = pSym.Current.Resources.GetEnumerator())
-                            while (resource.MoveNext())
-                            {
-                                if (resource.Current == null) continue;
-                                resource.Current.maxAmount *= 0.8;
-                                resource.Current.amount = Math.Min(resource.Current.amount, resource.Current.maxAmount);
-                            }
-                    }
-                    CASE.Case2 = CASE.CASELevel == 2 ? true : false;
-                    CASE.externallyCalled = false;
-                    GUIUtils.RefreshAssociatedWindows(pSym.Current);
+                            //else resource.Current.maxAmount = Math.Floor(resource.Current.maxAmount * 1.25);
+                            i++;
+                        }
                 }
+                if (!Case2 && CASELevel == 2)
+                {
+                    using (IEnumerator<PartResource> resource = part.Resources.GetEnumerator())
+                        while (resource.MoveNext())
+                        {
+                            if (resource.Current == null) continue;
+                            resource.Current.maxAmount *= 0.8;
+                            resource.Current.maxAmount = Math.Floor(resource.Current.maxAmount);
+                            resource.Current.amount = Math.Min(resource.Current.amount, resource.Current.maxAmount);
+                            GUIUtils.RefreshPAWResource(part, resource.Current);
+                        }
+                }
+
+                using (List<Part>.Enumerator pSym = part.symmetryCounterparts.GetEnumerator())
+                    while (pSym.MoveNext())
+                    {
+                        if (pSym.Current == null) continue;
+
+                        var CASE = pSym.Current.FindModuleImplementing<ModuleCASE>();
+                        if (CASE == null) continue;
+                        CASE.externallyCalled = true;
+                        CASE.CASELevel = CASELevel;
+                        CASE.CASEmass = CASEmass;
+                        CASE.CASEcost = CASEcost;
+
+                        if (CASE.Case2 && CASE.CASELevel != 2)
+                        {
+                            using (IEnumerator<PartResource> resource = pSym.Current.Resources.GetEnumerator())
+                                while (resource.MoveNext())
+                                {
+                                    if (resource.Current == null) continue;
+                                    resource.Current.maxAmount = Math.Floor(resource.Current.maxAmount * 1.25);
+                                    resource.Current.amount = Math.Min(resource.Current.amount, resource.Current.maxAmount);
+                                    GUIUtils.RefreshPAWResource(pSym.Current, resource.Current);
+                                }
+                        }
+                        if (!CASE.Case2 && CASE.CASELevel == 2)
+                        {
+                            using (IEnumerator<PartResource> resource = pSym.Current.Resources.GetEnumerator())
+                                while (resource.MoveNext())
+                                {
+                                    if (resource.Current == null) continue;
+                                    resource.Current.maxAmount *= 0.8;
+                                    resource.Current.amount = Math.Min(resource.Current.amount, resource.Current.maxAmount);
+                                    GUIUtils.RefreshPAWResource(pSym.Current, resource.Current);
+                                }
+                        }
+                        CASE.Case2 = CASE.CASELevel == 2 ? true : false;
+                        CASE.externallyCalled = false;
+                    }
+            }
+            else
+            {
+                if ((Case2 && CASELevel != 2) || (!Case2 && CASELevel == 2))
+                {
+                    AdjustableBin.hasCASEII = CASELevel == 2;
+                    AdjustableBin.AmmoVolumeChanged();
+                }
+
+                using (List<Part>.Enumerator pSym = part.symmetryCounterparts.GetEnumerator())
+                    while (pSym.MoveNext())
+                    {
+                        if (pSym.Current == null) continue;
+
+                        var CASE = pSym.Current.FindModuleImplementing<ModuleCASE>();
+                        if (CASE == null) continue;
+                        CASE.externallyCalled = true;
+                        CASE.CASELevel = CASELevel;
+                        CASE.CASEmass = CASEmass;
+                        CASE.CASEcost = CASEcost;
+                        if (CASE.AdjustableBin != null)
+                        {
+                            if ((CASE.Case2 && CASE.CASELevel != 2) || (!CASE.Case2 && CASE.CASELevel == 2))
+                            {
+                                CASE.AdjustableBin.hasCASEII = CASELevel == 2;
+                                CASE.AdjustableBin.AmmoVolumeChanged();
+                            }
+                        }
+                        CASE.Case2 = CASE.CASELevel == 2 ? true : false;
+                        CASE.externallyCalled = false;
+                    }
+            }
             Case2 = CASELevel == 2 ? true : false;
-            GUIUtils.RefreshAssociatedWindows(part);
         }
         public override void OnLoad(ConfigNode node)
         {
@@ -317,19 +357,19 @@ UI_FloatRange(minValue = 0f, maxValue = 100, stepIncrement = 0.5f, scene = UI_Sc
             {
                 if (CASELevel == 0)
                 {
-                    ExplosionFx.CreateExplosion(part.transform.position, (float)ammoExplosionYield, explModelPath, explSoundPath, ExplosionSourceType.BattleDamage, 120, part, SourceVessel, null, "Ammunition (CASE-0)", direction, -1, false, part.mass + ((float)ammoExplosionYield * 10f), 1200 * BDArmorySettings.EXP_DMG_MOD_BATTLE_DAMAGE);
+                    ExplosionFx.CreateExplosion(part.transform.position, (float)ammoExplosionYield, explModelPath, explSoundPath, ExplosionSourceType.BattleDamage, 120, part, SourceVessel, null, $"{part.partInfo.title} ({Math.Floor(ammoQuantity)} rounds)(CASE-0)", direction, -1, false, part.mass + ((float)ammoExplosionYield * 10f), 1200 * BDArmorySettings.EXP_DMG_MOD_BATTLE_DAMAGE);
                     if (BDArmorySettings.DEBUG_DAMAGE) Debug.Log("[BDArmory.ModuleCASE]: CASE 0 explosion, tntMassEquivilent: " + ammoExplosionYield);
                 }
                 else
                 {
                     direction = part.transform.up;
-                    ExplosionFx.CreateExplosion(part.transform.position, ((float)ammoExplosionYield), limitEdexploModelPath, explSoundPath, ExplosionSourceType.BattleDamage, 60, part, SourceVessel, null, "Ammunition (CASE-I)", direction, -1, false, part.mass + ((float)ammoExplosionYield * 10f), 600 * BDArmorySettings.EXP_DMG_MOD_BATTLE_DAMAGE);
+                    ExplosionFx.CreateExplosion(part.transform.position, ((float)ammoExplosionYield), limitEdexploModelPath, explSoundPath, ExplosionSourceType.BattleDamage, 60, part, SourceVessel, null, $"{part.partInfo.title} ({Math.Floor(ammoQuantity)} rounds)(CASE-I)", direction, -1, false, part.mass + ((float)ammoExplosionYield * 10f), 600 * BDArmorySettings.EXP_DMG_MOD_BATTLE_DAMAGE);
                     if (BDArmorySettings.DEBUG_DAMAGE) Debug.Log("[BDArmory.ModuleCASE]: CASE I explosion, tntMassEquivilent: " + ammoExplosionYield + ", part: " + part + ", vessel: " + vesselName);
                 }
             }
             else //if (CASELevel == 2) //blast contained, shunted out side of hull, minimal damage
             {
-                ExplosionFx.CreateExplosion(part.transform.position, (float)ammoExplosionYield, shuntExploModelPath, explSoundPath, ExplosionSourceType.BattleDamage, 30, part, SourceVessel, null, "Ammunition (CASE-II)", direction, -1, true);
+                ExplosionFx.CreateExplosion(part.transform.position, (float)ammoExplosionYield, shuntExploModelPath, explSoundPath, ExplosionSourceType.BattleDamage, 30, part, SourceVessel, null, $"{part.partInfo.title} ({Math.Floor(ammoQuantity)} rounds)(CASE-II)", direction, -1, true);
                 if (BDArmorySettings.DEBUG_DAMAGE) Debug.Log("[BDArmory.ModuleCASE]: CASE II explosion, tntMassEquivilent: " + ammoExplosionYield);
                 Ray BlastRay = new Ray(part.transform.position, part.transform.up);
                 var hitCount = Physics.RaycastNonAlloc(BlastRay, raycastHitBuffer, blastRadius, explosionLayerMask);
@@ -387,10 +427,10 @@ UI_FloatRange(minValue = 0f, maxValue = 100, stepIncrement = 0.5f, scene = UI_Sc
                                         {
                                             KerbalEVA eva = LOShit.collider.gameObject.GetComponentUpwards<KerbalEVA>();
                                             Part p = eva ? eva.part : LOShit.collider.gameObject.GetComponentInParent<Part>();
-                                            if (p == hitPart)
+                                            /*if (p == hitPart)
                                             {
                                                 ProjectileUtils.CalculateShrapnelDamage(hitPart, hit, 200, (float)ammoExplosionYield, dist, this.part.vessel.GetName(), ExplosionSourceType.BattleDamage, part.mass);
-                                            }
+                                            }*/
                                         }
                                     }
                                 }

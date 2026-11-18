@@ -1,8 +1,7 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-using BDArmory.Modules;
 using BDArmory.Utils;
 
 namespace BDArmory.CounterMeasure

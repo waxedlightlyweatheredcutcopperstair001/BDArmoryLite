@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using UnityEngine;
 
@@ -116,6 +116,39 @@ namespace BDArmory.FX
             }
             if (!surfaceFire)
             {
+                if (parentPart.GetComponent<ModuleSelfSealingTank>() != null)
+                {
+                    ModuleSelfSealingTank FBX;
+                    FBX = parentPart.GetComponent<ModuleSelfSealingTank>();
+                    FBX.Extinguishtank();
+                    if (FBX.InertTank) burnTime = 0.01f; //check is looking for > 0, value of 0 not getting caught.
+                    /*
+                    if (FBX.FireBottles > 0)
+                    {
+                        //FBX.FireBottles -= 1;
+                        if (engine != null && engine.EngineIgnited && engine.allowRestart)
+                        {
+                            engine.Shutdown();
+                            enginerestartTime = Time.time;
+                        }
+                        burnTime = 4;
+                        Debug.Log("[FireFX] firebottles remaining in " + parentPart.name + ": " + FBX.FireBottles);
+                    }
+                    else
+                    {
+                        if (engine != null && engine.EngineIgnited && engine.allowRestart)
+                        {
+                            if (parentPart.vessel.verticalSpeed < 30) //not diving/trying to climb. With the vessel registry, could also grab AI state to add a !evading check
+                            {
+                                engine.Shutdown();
+                                enginerestartTime = Time.time + 5;
+                                burnTime = 10;
+                            }
+                            //though if it is diving, then there isn't a second call to cycle engines. Add an Ienumerator to check once every couple sec?
+                        }
+                    }
+                    */
+                }
             }
             parentBeingDestroyed = false;
         }
@@ -153,7 +186,7 @@ namespace BDArmory.FX
                 return;
             }
             if (vacuum) transform.rotation = Quaternion.FromToRotation(Vector3.up, parentPart.vessel.obt_velocity.normalized);
-            else transform.rotation = Quaternion.FromToRotation(Vector3.up, -FlightGlobals.getGeeForceAtPosition(transform.position));
+            else transform.rotation = Quaternion.FromToRotation(Vector3.up, parentPart.vessel.up);
             fuel = parentPart.Resources.Where(pr => pr.resourceName == "LiquidFuel").FirstOrDefault();
             if (disableTime < 0) //only have fire do it's stuff while burning and not during FX timeout
             {
@@ -408,7 +441,6 @@ namespace BDArmory.FX
                     ec.maxAmount = 0;
                     ec.isVisible = false;
                     if (!parentBeingDestroyed) parentPart.RemoveResource(ec);//destroy battery. not calling part.destroy, since some batteries in cockpits.
-                    GUIUtils.RefreshAssociatedWindows(parentPart);
                 }
                 //tntMassEquivilent *= BDArmorySettings.BD_AMMO_DMG_MULT; //handled by EXP_DMG_MOD_BATTLE_DAMAGE
                 if (BDArmorySettings.DEBUG_OTHER && tntMassEquivalent > 0)
@@ -463,7 +495,7 @@ namespace BDArmory.FX
                 }
                 if (tntMassEquivalent > 0) //don't explode if nothing to detonate if called from OnParentDestroy()
                 {
-                    ExplosionFx.CreateExplosion(parentPart.transform.position, tntMassEquivalent, explModelPath, explSoundPath, ExplosionSourceType.BattleDamage, 120, null, parentPart.vessel != null ? parentPart.vessel.vesselName : null, null, "Fuel", sourceVelocity: parentPart.vessel.Velocity());
+                    ExplosionFx.CreateExplosion(parentPart.transform.position, tntMassEquivalent, explModelPath, explSoundPath, ExplosionSourceType.BattleDamage, 120, parentPart, parentPart.vessel != null ? parentPart.vessel.vesselName : null, null, "Fuel", sourceVelocity: parentPart.vessel.Velocity());
                     if (BDArmorySettings.RUNWAY_PROJECT_ROUND != 42)
                     {
                         if (tntFuel > 0 || tntMP > 0)
@@ -475,7 +507,7 @@ namespace BDArmory.FX
                     }
                 }
             }
-            Deactivate();
+            if (parentPart != null && parentPart.Modules.GetModule<HitpointTracker>().ignitionTemp < 0) Deactivate(); //wooden batteries keep burning
         }
 
         public void AttachAt(Part hitPart, Vector3 hit, Vector3 offset, string sourcevessel)
@@ -486,7 +518,7 @@ namespace BDArmory.FX
             // parentVesselName = parentPart.vessel.vesselName;
             transform.SetParent(hitPart.transform);
             transform.position = hit + offset;
-            transform.rotation = Quaternion.FromToRotation(Vector3.up, -FlightGlobals.getGeeForceAtPosition(transform.position));
+            transform.rotation = Quaternion.FromToRotation(Vector3.up, hitPart.vessel.up);
             parentPart.OnJustAboutToDie += OnParentDestroy;
             parentPart.OnJustAboutToBeDestroyed += OnParentDestroy;
             if ((Versioning.version_major == 1 && Versioning.version_minor > 10) || Versioning.version_major > 1) // onVesselUnloaded event introduced in 1.11

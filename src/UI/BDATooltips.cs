@@ -1,4 +1,4 @@
-﻿using BDArmory.Settings;
+using BDArmory.Settings;
 
 namespace BDArmory.UI
 {

@@ -1,4 +1,4 @@
-﻿namespace BDArmory.Weapons
+namespace BDArmory.Weapons
 {
     public class RippleOption
     {

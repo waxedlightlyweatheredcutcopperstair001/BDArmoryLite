@@ -1,4 +1,4 @@
-﻿namespace BDArmory.Utils
+namespace BDArmory.Utils
 {
     internal class DebugUtils
     {

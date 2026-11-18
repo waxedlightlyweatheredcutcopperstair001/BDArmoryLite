@@ -1,4 +1,4 @@
-﻿using BDArmory.Extensions;
+using BDArmory.Extensions;
 
 namespace BDArmory.Radar
 {
