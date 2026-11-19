@@ -29,9 +29,21 @@ namespace BDArmory.FX
                 if (installed == null)
                 {
                     installed = false;
+                    // Volumetric Explosion FX, or Volumetric FX Reconfigured (which includes it; its settings are in PluginData/Explosions).
                     foreach (var assembly in AssemblyLoader.loadedAssemblies)
-                        if (assembly.name == "VolumetricExplosionFX") { installed = true; break; }
-                    pluginSettingsPath = Path.Combine(KSPUtil.ApplicationRootPath, "GameData", "VolumetricExplosionFX", "PluginData", "settings.cfg");
+                    {
+                        if (assembly.name == "VolumetricFXReconfigured")
+                        {
+                            installed = true;
+                            pluginSettingsPath = Path.Combine(KSPUtil.ApplicationRootPath, "GameData", "VolumetricFXReconfigured", "PluginData", "Explosions", "settings.cfg");
+                            break;
+                        }
+                        if (assembly.name == "VolumetricExplosionFX")
+                        {
+                            installed = true;
+                            pluginSettingsPath = Path.Combine(KSPUtil.ApplicationRootPath, "GameData", "VolumetricExplosionFX", "PluginData", "settings.cfg");
+                        }
+                    }
                     if (installed == true)
                     {
                         // Shipped defaults (loaded by KSP's GameDatabase), then the player's saved settings (checked again when the file changes).

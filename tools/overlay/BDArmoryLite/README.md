@@ -1,4 +1,4 @@
-# BDArmory Lite 2.1.0
+# BDArmory Lite 2.1.1
 
 A streamlined BDArmory for KSP 1.12.x: guns, missiles, bombs, radar, targeting, countermeasures,
 armour plates and the weapon manager, with the North Kerbin Dynamics Renewed (NKDR) weapons
@@ -18,13 +18,18 @@ DocNappers; some missile models by Toonu).
 
 Required: **ModuleManager**.
 Optional: **Physics Range Extender** (lets you fight beyond KSP's ~2.5 km physics range),
-**Volumetric Explosion FX**, **VAB Organizer**, TweakScale.
+**Volumetric Explosion FX** or **Volumetric FX Reconfigured**, **VAB Organizer**, TweakScale.
 
 With Volumetric Explosion FX installed, BDArmory's own explosion visuals are hidden so the two
 don't draw on top of each other (sound and damage are unchanged). This follows Volumetric
 Explosion FX's settings: turn its explosions or "replace stock visuals" off, or watch a blast from
 beyond its effect distance, and BDArmory's visuals come back. There is also a toggle under
 Settings > Gameplay.
+
+## New in 2.1.1
+
+- Works with **Volumetric FX Reconfigured** (which includes Volumetric Explosion FX): BDArmory's own explosion visuals are
+  hidden while it draws the explosions, as with Volumetric Explosion FX.
 
 ## New in 2.1.0
 
