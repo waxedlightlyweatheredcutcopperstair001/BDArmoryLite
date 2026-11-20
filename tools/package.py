@@ -14,6 +14,7 @@ import os, re, shutil, sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import categorize
+import recolor
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(ROOT), 'North_Kerbin_Dynamic_Renewed-0.1.1', 'gameData')
@@ -43,6 +44,12 @@ EXCLUDE = [  # paths relative to the BDArmory folder (prefix match), plus junk e
     'MMPatches/StructPWing.cfg',     # B9 procedural structural panel clone, not a weapons system
     'Parts/AmmoBox/UniversalAmmoBoxBDA.cfg',  # "Universal Ammo Box (Legacy)": duplicate of BDAcUniversalAmmoBox (same model, same ammo)
 ]
+# BDArmory's green HUD textures (aimers, target markers, radar and RWR displays), recoloured to the UI theme's orange
+# (BDAStyle.Title) by tools/recolor.py. File names are kept because the code loads them by name.
+HUD_TEXTURES = ['crossedGreenSquare', 'directionIcon', 'dottedLargeGreenCircle', 'friendlyContactIcon', 'greenCircle2',
+                'greenCircle3', 'greenCross', 'greenDiamond', 'greenDot', 'greenPointCircle', 'greenSpikedCircle',
+                'lockedRadarIcon', 'lockedRadarIconActive', 'omniRadarScanTexture', 'omniRadarTexture', 'openGreenSquare',
+                'radarContactIcon', 'radarRollIndicator', 'radialRadarTexture', 'rwrDiamond']
 JUNK = re.compile(r'(^|/)(\.DS_Store|Thumbs\.db|\.note)$')
 
 
@@ -210,6 +217,9 @@ def main():
         os.remove(os.path.join(OUT, 'BDArmoryExtended', e))
     shutil.copy2(os.path.join(BDAX, 'License.txt'), os.path.join(OUT, 'BDArmoryExtended-License.txt'))
     shutil.copy2(os.path.join(BDAX, 'changelog.txt'), os.path.join(OUT, 'BDArmoryExtended', 'changelog.txt'))
+    recoloured = sum(recolor.recolor_file(os.path.join(OUT, 'Textures', t + '.png')) > 0 for t in HUD_TEXTURES)
+    if recoloured != len(HUD_TEXTURES):
+        sys.exit(f'Only {recoloured} of {len(HUD_TEXTURES)} HUD textures had green pixels to recolour')
     os.makedirs(os.path.join(OUT, 'Plugins'))
     shutil.copy2(DLL, os.path.join(OUT, 'Plugins', 'BDArmory.dll'))
 
@@ -262,7 +272,8 @@ def main():
     files = sum(len(fs) for _, _, fs in os.walk(OUT))
     size = sum(os.path.getsize(os.path.join(d, f)) for d, _, fs in os.walk(OUT) for f in fs)
     print(f'GameData/BDArmoryLite: {files} files, {size / 1e6:.1f} MB; rewrote paths in {stats["paths"]} configs, '
-          f'removed {stats["modules"]} dead MODULE nodes and {stats["patches"]} self-sealing-tank patches.')
+          f'removed {stats["modules"]} dead MODULE nodes and {stats["patches"]} self-sealing-tank patches; '
+          f'recoloured {recoloured} HUD textures orange.')
     print('Editor subcategories: ' + ', '.join(f'{k} {categorized.get(k, 0)}' for k, _ in categorize.SUBCATEGORIES))
 
 

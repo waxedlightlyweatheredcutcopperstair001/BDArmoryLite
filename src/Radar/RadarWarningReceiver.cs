@@ -176,7 +176,7 @@ namespace BDArmory.Radar
                 clipping = TextClipping.Overflow,
                 wordWrap = false,
                 fontStyle = FontStyle.Bold,
-                normal = new GUIStyleState { textColor = Color.green }
+                normal = new GUIStyleState { textColor = BDAStyle.Hud() }
             };
 
             audioSource = gameObject.AddComponent<AudioSource>();

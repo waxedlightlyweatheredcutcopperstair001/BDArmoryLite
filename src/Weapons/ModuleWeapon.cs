@@ -2354,7 +2354,7 @@ namespace BDArmory.Weapons
 
                         if (!slaved && !GPSTarget)
                         {
-                            GUIUtils.DrawLineBetweenWorldPositions(pointingAtPosition, reticlePosition, 2, new Color(0, 1, 0, 0.6f));
+                            GUIUtils.DrawLineBetweenWorldPositions(pointingAtPosition, reticlePosition, 2, BDAStyle.Hud(0.6f));
                         }
 
                         GUIUtils.DrawTextureOnWorldPos(pointingAtPosition, BDArmorySetup.Instance.greenDotTexture, new Vector2(6, 6), 0);

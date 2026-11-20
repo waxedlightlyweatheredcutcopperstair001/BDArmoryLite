@@ -379,20 +379,20 @@ namespace BDArmory.Radar
 
             distanceStyle = new GUIStyle
             {
-                normal = { textColor = new Color(0, 1, 0, 0.75f) },
+                normal = { textColor = BDAStyle.Hud(0.75f) },
                 alignment = TextAnchor.UpperLeft
             };
 
             lockStyle = new GUIStyle
             {
-                normal = { textColor = new Color(0, 1, 0, 0.75f) },
+                normal = { textColor = BDAStyle.Hud(0.75f) },
                 alignment = TextAnchor.LowerCenter,
                 fontSize = 16
             };
 
             radarTopStyle = new GUIStyle
             {
-                normal = { textColor = new Color(0, 1, 0, 0.65f) },
+                normal = { textColor = BDAStyle.Hud(0.65f) },
                 alignment = TextAnchor.UpperCenter,
                 fontSize = 12
             };
@@ -1243,7 +1243,7 @@ namespace BDArmory.Radar
                         {
                             GUIUtils.DrawRectangle(
                                 new Rect(scanRect.x + (scanRect.width / 2) - 1, scanRect.y, 2, scanRect.height / 2),
-                                new Color(0, 1, 0, 0.35f));
+                                BDAStyle.Hud(0.35f));
                         }
                         GUI.matrix = guiMatrix;
                     }
@@ -1256,10 +1256,10 @@ namespace BDArmory.Radar
                     Rect verticalLineRect = new Rect(scanRect.center.x - (lineWidth / 2), 0, lineWidth,
                       scanRect.center.y);
                     GUIUtility.RotateAroundPivot(dAngle + radarFOVAngleArr[i] + radarAngleArr[i], guiMatrix * scanRect.center);
-                    GUIUtils.DrawRectangle(verticalLineRect, new Color(0, 1, 0, 0.6f));
+                    GUIUtils.DrawRectangle(verticalLineRect, BDAStyle.Hud(0.6f));
                     GUI.matrix = guiMatrix;
                     GUIUtility.RotateAroundPivot(dAngle - radarFOVAngleArr[i] + radarAngleArr[i], guiMatrix * scanRect.center);
-                    GUIUtils.DrawRectangle(verticalLineRect, new Color(0, 1, 0, 0.4f));
+                    GUIUtils.DrawRectangle(verticalLineRect, BDAStyle.Hud(0.4f));
                     GUI.matrix = guiMatrix;
                 }
                 for (int i = guiRCount; i < guiSCount; i++)
@@ -1308,7 +1308,7 @@ namespace BDArmory.Radar
                     float barWidth = 2;
                     float barHeight = 15;
                     Color origColor = GUI.color;
-                    GUI.color = Color.green;
+                    GUI.color = BDAStyle.Hud();
                     GUI.DrawTexture(new Rect(leftPos.x - barWidth, leftPos.y - barHeight, barWidth, barHeight),
                         Texture2D.whiteTexture, ScaleMode.StretchToFill, true);
                     GUI.DrawTexture(new Rect(rightPos.x, rightPos.y - barHeight, barWidth, barHeight),
@@ -1333,8 +1333,8 @@ namespace BDArmory.Radar
                 Rect sLeftRect = new Rect(selectorRect.x, selectorRect.y, selectorSize / 6, selectorRect.height);
                 Rect sRightRect = new Rect(selectorRect.x + selectorRect.width - (selectorSize / 6), selectorRect.y,
                     selectorSize / 6, selectorRect.height);
-                GUIUtils.DrawRectangle(sLeftRect, Color.green);
-                GUIUtils.DrawRectangle(sRightRect, Color.green);
+                GUIUtils.DrawRectangle(sLeftRect, BDAStyle.Hud());
+                GUIUtils.DrawRectangle(sRightRect, BDAStyle.Hud());
             }
 
             //missile data
@@ -2753,24 +2753,24 @@ namespace BDArmory.Radar
                                 Mathf.Clamp(RadarDisplayRect.height - (guiDLZData.maxLaunchRange * rangeToPixels), 0,
                                     RadarDisplayRect.height), lineWidth,
                                 Mathf.Clamp(guiDLZData.maxLaunchRange * rangeToPixels, 0, RadarDisplayRect.height));
-                            GUIUtils.DrawRectangle(maxRangeVertLineRect, Color.green);
+                            GUIUtils.DrawRectangle(maxRangeVertLineRect, BDAStyle.Hud());
 
                             Rect maxRangeTickRect = new Rect(dlzX, maxRangeVertLineRect.y, dlzWidth, lineWidth);
-                            GUIUtils.DrawRectangle(maxRangeTickRect, Color.green);
+                            GUIUtils.DrawRectangle(maxRangeTickRect, BDAStyle.Hud());
 
                             Rect minRangeTickRect = new Rect(dlzX,
                                 Mathf.Clamp(RadarDisplayRect.height - (guiDLZData.minLaunchRange * rangeToPixels), 0,
                                     RadarDisplayRect.height), dlzWidth, lineWidth);
-                            GUIUtils.DrawRectangle(minRangeTickRect, Color.green);
+                            GUIUtils.DrawRectangle(minRangeTickRect, BDAStyle.Hud());
 
                             Rect rTrTickRect = new Rect(dlzX,
                                 Mathf.Clamp(RadarDisplayRect.height - (guiDLZData.rangeTr * rangeToPixels), 0, RadarDisplayRect.height),
                                 dlzWidth, lineWidth);
-                            GUIUtils.DrawRectangle(rTrTickRect, Color.green);
+                            GUIUtils.DrawRectangle(rTrTickRect, BDAStyle.Hud());
 
                             Rect noEscapeLineRect = new Rect(dlzX, rTrTickRect.y, lineWidth,
                                 minRangeTickRect.y - rTrTickRect.y);
-                            GUIUtils.DrawRectangle(noEscapeLineRect, Color.green);
+                            GUIUtils.DrawRectangle(noEscapeLineRect, BDAStyle.Hud());
 
                             float targetDistIconSize = 16 * BDArmorySettings.RADAR_WINDOW_SCALE;
                             float targetDistY;
@@ -2862,7 +2862,7 @@ namespace BDArmory.Radar
                                 pingSize.y);
                             }
 
-                            Color iconColor = Color.green;
+                            Color iconColor = BDAStyle.Hud();
                             float contactAlt = tData.altitude;
                             if (!omniDisplay && !jammed)
                             {
@@ -2872,7 +2872,7 @@ namespace BDArmory.Radar
                                 }
                                 else if (contactAlt - myAlt < -1000)
                                 {
-                                    iconColor = new Color(1f, 0.68f, 0, 1);
+                                    iconColor = new Color(1f, 0.92f, 0.3f, 1); // Below: yellow (was orange, now the HUD colour for level contacts).
                                 }
                             }
 

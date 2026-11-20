@@ -28,6 +28,9 @@ namespace BDArmory.UI
         public static readonly Color TextDim = Hex(0x9AA0A6);
         public static readonly Color Field = Hex(0x131417);
         public static readonly Color FieldBorder = Hex(0x3A3D42);
+        /// <summary>In-flight HUD colour (aimers, target markers, radar and RWR displays): the title orange with the given alpha.
+        /// The matching HUD textures (greenDot, greenCircle2, ...) are recoloured to this orange by tools/package.py.</summary>
+        public static Color Hud(float alpha = 1f) => new Color(Title.r, Title.g, Title.b, alpha);
         #endregion
 
         static GUISkin _skin;
