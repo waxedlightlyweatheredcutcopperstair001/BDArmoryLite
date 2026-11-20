@@ -1536,14 +1536,7 @@ namespace BDArmory.Control
                             Destroy(dc);
                         }
                     }
-                    // BDArmory Lite: the blast-radius ring in the theme's orange (it was white).
-                    foreach (var ringRenderer in boreRing.GetComponentsInChildren<Renderer>(true))
-                        foreach (var ringMaterial in ringRenderer.materials)
-                        {
-                            Color orange = BDAStyle.Title;
-                            if (ringMaterial.HasProperty("_TintColor")) { orange.a = ringMaterial.GetColor("_TintColor").a; ringMaterial.SetColor("_TintColor", orange); }
-                            if (ringMaterial.HasProperty("_Color")) { orange.a = ringMaterial.GetColor("_Color").a; ringMaterial.SetColor("_Color", orange); }
-                        }
+                    TintBlastRing(boreRing);
                 }
                 //Renderer d = ring.GetComponentInChildren<Renderer>();
                 //if (d != null)
@@ -10917,6 +10910,37 @@ namespace BDArmory.Control
         #endregion Turret
 
         #region BombAimer
+        /// <summary>
+        /// BDArmory Lite: the bomb blast-radius dome and ring in the theme's orange. The green is baked into the model (its
+        /// mesh's vertex colours and/or its material colour), so both are replaced: vertex colours become white (keeping
+        /// their transparency) and the materials' colour orange (keeping its transparency).
+        /// </summary>
+        static void TintBlastRing(GameObject ring)
+        {
+            if (ring == null) return;
+            foreach (var filter in ring.GetComponentsInChildren<MeshFilter>(true))
+            {
+                var mesh = filter.mesh; // (an instance: the model's own mesh is left alone)
+                if (mesh == null) continue;
+                var colours = mesh.colors;
+                if (colours != null && colours.Length > 0)
+                {
+                    Debug.Log($"[BDArmory.MissileFire]: Blast ring mesh '{mesh.name}': {colours.Length} vertex colours (first {colours[0]}) set to white.");
+                    for (int i = 0; i < colours.Length; ++i) colours[i] = new Color(1, 1, 1, colours[i].a);
+                    mesh.colors = colours;
+                }
+            }
+            foreach (var renderer in ring.GetComponentsInChildren<Renderer>(true))
+                foreach (var material in renderer.materials)
+                {
+                    Color orange = BDAStyle.Title;
+                    string before = material.HasProperty("_Color") ? material.GetColor("_Color").ToString() : "none";
+                    foreach (var property in new[] { "_Color", "_TintColor", "_EmissiveColor", "_MainColor" })
+                        if (material.HasProperty(property)) { orange.a = material.GetColor(property).a; material.SetColor(property, orange); }
+                    Debug.Log($"[BDArmory.MissileFire]: Blast ring material '{material.name}' (shader {material.shader.name}, colour {before}) tinted orange.");
+                }
+        }
+
         bool ShowBoreRing(bool visible)
         {
             if (vessel == null || !vessel.isActiveVessel) return false; // We're not in control.
