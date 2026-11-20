@@ -1536,6 +1536,14 @@ namespace BDArmory.Control
                             Destroy(dc);
                         }
                     }
+                    // BDArmory Lite: the blast-radius ring in the theme's orange (it was white).
+                    foreach (var ringRenderer in boreRing.GetComponentsInChildren<Renderer>(true))
+                        foreach (var ringMaterial in ringRenderer.materials)
+                        {
+                            Color orange = BDAStyle.Title;
+                            if (ringMaterial.HasProperty("_TintColor")) { orange.a = ringMaterial.GetColor("_TintColor").a; ringMaterial.SetColor("_TintColor", orange); }
+                            if (ringMaterial.HasProperty("_Color")) { orange.a = ringMaterial.GetColor("_Color").a; ringMaterial.SetColor("_Color", orange); }
+                        }
                 }
                 //Renderer d = ring.GetComponentInChildren<Renderer>();
                 //if (d != null)

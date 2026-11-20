@@ -1,4 +1,4 @@
-# BDArmory Lite 2.1.1
+# BDArmory Lite 2.1.2
 
 A streamlined BDArmory for KSP 1.12.x: guns, missiles, bombs, radar, targeting, countermeasures,
 armour plates and the weapon manager, with the North Kerbin Dynamics Renewed (NKDR) weapons
@@ -25,6 +25,11 @@ don't draw on top of each other (sound and damage are unchanged). This follows V
 Explosion FX's settings: turn its explosions or "replace stock visuals" off, or watch a blast from
 beyond its effect distance, and BDArmory's visuals come back. There is also a toggle under
 Settings > Gameplay.
+
+## New in 2.1.2
+
+- The in-flight HUD is orange, matching the interface: aiming circles and reticles, target boxes, GPS markers, the
+  bomb blast-radius ring, the radar and RWR displays (radar contacts: blue above you, orange level, yellow below).
 
 ## New in 2.1.1
 
