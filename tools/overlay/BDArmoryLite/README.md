@@ -1,4 +1,4 @@
-# BDArmory Lite 2.1.4
+# BDArmory Lite 2.1.5
 
 A streamlined BDArmory for KSP 1.12.x: guns, missiles, bombs, radar, targeting, countermeasures,
 armour plates and the weapon manager, with the North Kerbin Dynamics Renewed (NKDR) weapons
@@ -25,6 +25,12 @@ don't draw on top of each other (sound and damage are unchanged). This follows V
 Explosion FX's settings: turn its explosions or "replace stock visuals" off, or watch a blast from
 beyond its effect distance, and BDArmory's visuals come back. There is also a toggle under
 Settings > Gameplay.
+
+## New in 2.1.5
+
+- With Volumetric FX Reconfigured, all of BDArmory's nuclear explosion effects (the flash, shock, blast smoke, plume and
+  debris) are now hidden out to 60 km too: 2.1.4 hid only part of them, so a giant dark smoke ball and a brown ground
+  cloud were still drawn around the volumetric mushroom.
 
 ## New in 2.1.4
 

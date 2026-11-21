@@ -375,9 +375,9 @@ namespace BDArmory.FX
                     if (lastValidAtmDensity < 0.05)
                     {
                         if (!string.IsNullOrWhiteSpace(flashModelPath))
-                            fxEmitters.Add(FXEmitter.CreateFX(Position, scale * 50f, flashModelPath, "", 0.4f, 0.4f));
+                            fxEmitters.Add(FXEmitter.CreateFX(Position, scale * 50f, flashModelPath, "", 0.4f, 0.4f, nuclear: true));
                         if (!string.IsNullOrWhiteSpace(shockModelPath))
-                            fxEmitters.Add(FXEmitter.CreateFX(Position, scale * 14f, shockModelPath, "", 0.2f, 0.6f));
+                            fxEmitters.Add(FXEmitter.CreateFX(Position, scale * 14f, shockModelPath, "", 0.2f, 0.6f, nuclear: true));
                     }
                     else
                     {
@@ -385,11 +385,11 @@ namespace BDArmory.FX
                         //scaling calc is roughly SqRt( 400 * (6x))
                         //fireball diameter is 59 * Mathf.Pow(yield, 0.4f), apparently?
                         if (!string.IsNullOrWhiteSpace(flashModelPath))
-                            fxEmitters.Add(FXEmitter.CreateFX(Position, scale, flashModelPath, "", 0.3f, -1, default, true));
+                            fxEmitters.Add(FXEmitter.CreateFX(Position, scale, flashModelPath, "", 0.3f, -1, default, true, nuclear: true));
                         if (!string.IsNullOrWhiteSpace(shockModelPath))
-                            fxEmitters.Add(FXEmitter.CreateFX(Position, scale * lastValidAtmDensity, shockModelPath, "", 0.3f, -1, default, true));
+                            fxEmitters.Add(FXEmitter.CreateFX(Position, scale * lastValidAtmDensity, shockModelPath, "", 0.3f, -1, default, true, nuclear: true));
                         if (!string.IsNullOrWhiteSpace(blastModelPath))
-                            fxEmitters.Add(FXEmitter.CreateFX(Position, scale, blastModelPath, blastSoundPath, 1.5f, Mathf.Clamp(30 * scale, 30f, 90f), default, true));
+                            fxEmitters.Add(FXEmitter.CreateFX(Position, scale, blastModelPath, blastSoundPath, 1.5f, Mathf.Clamp(30 * scale, 30f, 90f), default, true, nuclear: true));
 
                         if (BodyUtils.GetRadarAltitudeAtPos(Position) < 200 * scale)
                         {
@@ -397,9 +397,9 @@ namespace BDArmory.FX
                             double longitudeAtPos = FlightGlobals.currentMainBody.GetLongitude(Position);
                             double altitude = FlightGlobals.currentMainBody.TerrainAltitude(latitudeAtPos, longitudeAtPos);
                             if (!string.IsNullOrWhiteSpace(plumeModelPath))
-                                FXEmitter.CreateFX(FlightGlobals.currentMainBody.GetWorldSurfacePosition(latitudeAtPos, longitudeAtPos, altitude), Mathf.Clamp(scale, 0.01f, 3f), plumeModelPath, "", Mathf.Clamp(30 * scale, 30f, 90f), Mathf.Clamp(30 * scale, 30f, 90f), default, true, true);
+                                FXEmitter.CreateFX(FlightGlobals.currentMainBody.GetWorldSurfacePosition(latitudeAtPos, longitudeAtPos, altitude), Mathf.Clamp(scale, 0.01f, 3f), plumeModelPath, "", Mathf.Clamp(30 * scale, 30f, 90f), Mathf.Clamp(30 * scale, 30f, 90f), default, true, true, true);
                             if (!string.IsNullOrWhiteSpace(debrisModelPath))
-                                FXEmitter.CreateFX(FlightGlobals.currentMainBody.GetWorldSurfacePosition(latitudeAtPos, longitudeAtPos, altitude), scale, debrisModelPath, "", 1.5f, Mathf.Clamp(30 * scale, 30f, 90f), default, true);
+                                FXEmitter.CreateFX(FlightGlobals.currentMainBody.GetWorldSurfacePosition(latitudeAtPos, longitudeAtPos, altitude), scale, debrisModelPath, "", 1.5f, Mathf.Clamp(30 * scale, 30f, 90f), default, true, nuclear: true);
                         }
                     }
                 }

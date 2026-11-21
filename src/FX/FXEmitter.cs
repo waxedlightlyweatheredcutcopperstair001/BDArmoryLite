@@ -21,6 +21,8 @@ namespace BDArmory.FX
         private float emitTime { get; set; }
         private float maxTime { get; set; }
         private bool overrideLifeTime { get; set; }
+        /// <summary>Part of a nuclear explosion (NukeFX): Volumetric Explosion FX draws those farther, so these are hidden farther.</summary>
+        public bool Nuclear { get; set; }
         public Vector3 Position { get { return _position; } set { _position = value; transform.position = _position; } }
         Vector3 _position;
         public Vector3 Direction { get; set; }
@@ -56,7 +58,7 @@ namespace BDArmory.FX
                     emission.enabled = true;
                     EffectBehaviour.AddParticleEmitter(pe);
                 }
-            VolumetricExplosionFXBridge.SetVisible(gameObject, !VolumetricExplosionFXBridge.HideVisualsAt(Position)); // Volumetric Explosion FX draws its own; the sound still plays.
+            VolumetricExplosionFXBridge.SetVisible(gameObject, !VolumetricExplosionFXBridge.HideVisualsAt(Position, Nuclear)); // Volumetric Explosion FX draws its own; the sound still plays.
             if (!string.IsNullOrEmpty(SoundPath))
             {
                 audioSource = gameObject.GetComponent<AudioSource>();
@@ -178,7 +180,7 @@ namespace BDArmory.FX
             }
         }
 
-        public static FXEmitter CreateFX(Vector3 position, float scale, string ModelPath, string soundPath, float time = 0.3f, float lifeTime = -1, Vector3 direction = default(Vector3), bool scaleEmitter = false, bool fixedLifetime = false)
+        public static FXEmitter CreateFX(Vector3 position, float scale, string ModelPath, string soundPath, float time = 0.3f, float lifeTime = -1, Vector3 direction = default(Vector3), bool scaleEmitter = false, bool fixedLifetime = false, bool nuclear = false)
         {
             CreateObjectPool(ModelPath, soundPath);
 
@@ -207,6 +209,7 @@ namespace BDArmory.FX
             eFx.emitTime = time;
             eFx.maxTime = lifeTime;
             eFx.overrideLifeTime = fixedLifetime;
+            eFx.Nuclear = nuclear;
             eFx.pEmitters = newFX.GetComponentsInChildren<KSPParticleEmitter>();
             if (!string.IsNullOrEmpty(soundPath))
             {
