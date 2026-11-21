@@ -10,7 +10,7 @@ import os, re, sys, subprocess
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 GD = os.path.join(ROOT, 'GameData')
 MOD = os.path.join(GD, 'BDArmoryLite')
-SCRATCH_META = os.environ.get('CLRMETA')  # optional path to clrmeta.py for module checks
+SCRATCH_META = os.environ.get('CLRMETA', os.path.join(os.path.dirname(os.path.abspath(__file__)), 'clrmeta.py'))  # CLR metadata reader for module checks
 MANAGED = os.environ.get('KSPManaged', os.path.join(os.path.dirname(ROOT), 'Managed-20261117T003226Z-1-001', 'Managed'))
 ASSET_EXT = ['.mu', '.png', '.dds', '.tga', '.jpg', '.mbm', '.truecolor', '.wav', '.ogg', '.mp3', '.bundle', '']
 OPTIONAL_MODULES = {'TweakScale', 'FSanimateGeneric', 'ModuleB9PartSwitch', 'FSfuelSwitch', 'ModuleWaterfallFX'}  # handled by other mods if installed
