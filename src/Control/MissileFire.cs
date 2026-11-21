@@ -10918,27 +10918,48 @@ namespace BDArmory.Control
         static void TintBlastRing(GameObject ring)
         {
             if (ring == null) return;
-            foreach (var filter in ring.GetComponentsInChildren<MeshFilter>(true))
+            // Vertex colours (meshes and skinned meshes) to white, keeping their transparency.
+            var meshes = new System.Collections.Generic.List<Mesh>();
+            foreach (var filter in ring.GetComponentsInChildren<MeshFilter>(true)) if (filter.mesh != null) meshes.Add(filter.mesh);
+            foreach (var skinned in ring.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+                if (skinned.sharedMesh != null) { skinned.sharedMesh = Instantiate(skinned.sharedMesh); meshes.Add(skinned.sharedMesh); }
+            foreach (var mesh in meshes)
             {
-                var mesh = filter.mesh; // (an instance: the model's own mesh is left alone)
-                if (mesh == null) continue;
                 var colours = mesh.colors;
-                if (colours != null && colours.Length > 0)
-                {
-                    Debug.Log($"[BDArmory.MissileFire]: Blast ring mesh '{mesh.name}': {colours.Length} vertex colours (first {colours[0]}) set to white.");
-                    for (int i = 0; i < colours.Length; ++i) colours[i] = new Color(1, 1, 1, colours[i].a);
-                    mesh.colors = colours;
-                }
+                if (colours == null || colours.Length == 0) continue;
+                Debug.Log($"[BDArmory.MissileFire]: Blast ring mesh '{mesh.name}': {colours.Length} vertex colours (first {colours[0]}) set to white.");
+                for (int i = 0; i < colours.Length; ++i) colours[i] = new Color(1, 1, 1, colours[i].a);
+                mesh.colors = colours;
             }
+            // New materials on a known shader (KSP's alpha-blended particles: texture x vertex colour x 2 x tint), orange,
+            // with the model's own texture and transparency: whatever coloured the model's materials no longer applies.
+            Shader particles = Shader.Find("KSP/Particles/Alpha Blended");
+            Color orange = BDAStyle.Title;
             foreach (var renderer in ring.GetComponentsInChildren<Renderer>(true))
-                foreach (var material in renderer.materials)
+            {
+                var materials = renderer.sharedMaterials;
+                for (int m = 0; m < materials.Length; ++m)
                 {
-                    Color orange = BDAStyle.Title;
-                    string before = material.HasProperty("_Color") ? material.GetColor("_Color").ToString() : "none";
-                    foreach (var property in new[] { "_Color", "_TintColor", "_EmissiveColor", "_MainColor" })
-                        if (material.HasProperty(property)) { orange.a = material.GetColor(property).a; material.SetColor(property, orange); }
-                    Debug.Log($"[BDArmory.MissileFire]: Blast ring material '{material.name}' (shader {material.shader.name}, colour {before}) tinted orange.");
+                    Material old = materials[m];
+                    if (old == null) continue;
+                    float alpha = old.HasProperty("_Color") ? old.GetColor("_Color").a : old.HasProperty("_TintColor") ? old.GetColor("_TintColor").a : 1f;
+                    Debug.Log($"[BDArmory.MissileFire]: Blast ring material '{old.name}' (shader {old.shader.name}, colour {(old.HasProperty("_Color") ? old.GetColor("_Color").ToString() : "none")}) replaced with orange.");
+                    if (particles != null)
+                    {
+                        var fresh = new Material(particles) { mainTexture = old.mainTexture, renderQueue = old.renderQueue };
+                        fresh.SetColor("_TintColor", new Color(orange.r * 0.5f, orange.g * 0.5f, orange.b * 0.5f, 0.5f * alpha));
+                        materials[m] = fresh;
+                    }
+                    else
+                    {
+                        var copy = new Material(old);
+                        foreach (var property in new[] { "_Color", "_TintColor", "_EmissiveColor", "_MainColor" })
+                            if (copy.HasProperty(property)) copy.SetColor(property, new Color(orange.r, orange.g, orange.b, copy.GetColor(property).a));
+                        materials[m] = copy;
+                    }
                 }
+                renderer.sharedMaterials = materials;
+            }
         }
 
         bool ShowBoreRing(bool visible)

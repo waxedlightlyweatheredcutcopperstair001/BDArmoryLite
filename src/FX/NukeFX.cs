@@ -371,7 +371,7 @@ namespace BDArmory.FX
                         minImpulse = (nukeMass * 15295.74) / (4 * Math.PI * Math.Pow(thermalRadius, 2.0));// * (part.radiativeArea / 3.0);
                     CalculateBlastEvents();
                     if (isEMP) CalculateEMPEvent();
-                    VolumetricExplosionFXBridge.SetVisible(gameObject, !VolumetricExplosionFXBridge.HideVisualsAt(Position)); // Volumetric Explosion FX draws its own.
+                    VolumetricExplosionFXBridge.SetVisible(gameObject, !VolumetricExplosionFXBridge.HideVisualsAt(Position, true)); // Volumetric Explosion FX draws its own.
                     if (lastValidAtmDensity < 0.05)
                     {
                         if (!string.IsNullOrWhiteSpace(flashModelPath))

@@ -60,13 +60,16 @@ namespace BDArmory.FX
         static bool VisualsReplaced => Installed && BDArmorySettings.VEFX_HIDE_BDA_EXPLOSIONS && vefxEnabled && vefxExplosions && vefxReplaceStock;
 
         /// <summary>Should BDArmory hide its own visuals for an explosion at this position?</summary>
-        public static bool HideVisualsAt(Vector3 position)
+        /// <param name="nuclear">A nuclear explosion: Volumetric Explosion FX / FX Reconfigured draw those out to 60 km (at least
+        /// fxDistance), so BDArmory's own nuke visuals stay hidden that far (both were drawn between 10 and 60 km).</param>
+        public static bool HideVisualsAt(Vector3 position, bool nuclear = false)
         {
             if (!Installed) return false;
             if (Time.unscaledTime - lastCheck > 2f) { lastCheck = Time.unscaledTime; RefreshPlayerSettings(); } // VEFX settings can change in game.
             if (!VisualsReplaced) return false;
             var camera = FlightCamera.fetch != null ? FlightCamera.fetch.mainCamera : null;
-            if (camera != null && vefxFxDistance > 0 && (camera.transform.position - position).sqrMagnitude > vefxFxDistance * vefxFxDistance)
+            float reach = nuclear ? Mathf.Max(vefxFxDistance, 60000f) : vefxFxDistance;
+            if (camera != null && vefxFxDistance > 0 && (camera.transform.position - position).sqrMagnitude > reach * reach)
                 return false; // VEFX doesn't draw blasts this far from the camera.
             return true;
         }
