@@ -36,7 +36,21 @@ namespace BDArmory.Guidances
 
             Vector3 agmTarget;
 
-            if (missile.vessel.verticalSpeed > 0 && pendingDistance > _originalDistance * 0.5)
+            // BDArmory Lite: the climb fits the shot. The loft angle (Ballistic Angle at most) is limited so the missile can
+            // turn from climbing to diving within the distance left (a turn of radius speed / turn rate), and it starts
+            // diving early enough to make that turn. A fixed 45° climb to halfway sent short shots (an M30 at 2.5 km)
+            // sailing over the target: turning back down took further than the whole shot.
+            float speed = Mathf.Max((float)missile.vessel.srfSpeed, missile is MissileLauncher launcher ? launcher.optimumAirspeed : 150f, 50f);
+            float turnRate = Mathf.Max(missile is MissileLauncher ml ? ml.maxTurnRateDPS : 30f, 1f) * Mathf.Deg2Rad * 0.75f;   // (a margin: aero missiles rarely reach their maximum)
+            float turnRadius = speed / turnRate;
+            float maxLoft = Mathf.Asin(Mathf.Clamp01((float)pendingDistance / (4f * turnRadius))) * Mathf.Rad2Deg;
+            float loft = Mathf.Max(3f, Mathf.Min(missile.BallisticAngle, missile.maxOffBoresight * 0.9f, maxLoft));
+            float climb = Mathf.Asin(Mathf.Clamp((float)(missile.vessel.verticalSpeed / Mathf.Max((float)missile.vessel.srfSpeed, 1f)), -1f, 1f));
+            float turnDistance = turnRadius * (Mathf.Max(Mathf.Sin(climb), 0f) + Mathf.Sin(loft * Mathf.Deg2Rad)) * 1.15f;
+            if (BDArmorySettings.DEBUG_TELEMETRY || BDArmorySettings.DEBUG_MISSILES)
+                missile.debugString.AppendLine($"Loft: {loft:F1}° (max {maxLoft:F1}°), turn radius {turnRadius:F0} m, dive at {turnDistance:F0} m");
+
+            if (missile.vessel.verticalSpeed > 0 && pendingDistance > _originalDistance * 0.5 && pendingDistance > turnDistance)
             {
                 var freeFallTime = CalculateFreeFallTime(missile);
 
@@ -66,7 +80,7 @@ namespace BDArmory.Guidances
                 }
 
                 Vector3 dToTarget = targetPosition - missile.vessel.CoM;
-                Vector3 direction = Quaternion.AngleAxis(Mathf.Clamp(missile.maxOffBoresight * 0.9f, 0, missile.BallisticAngle), Vector3.Cross(dToTarget, missile.vessel.up)) * dToTarget;
+                Vector3 direction = Quaternion.AngleAxis(loft, Vector3.Cross(dToTarget, missile.vessel.up)) * dToTarget;
                 agmTarget = missile.vessel.CoM + direction;
 
 

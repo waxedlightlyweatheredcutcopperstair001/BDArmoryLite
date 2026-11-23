@@ -637,7 +637,7 @@ namespace BDArmory.Radar
             // Previously the following line had !vessel.Landed which is a bit weird, the b-scope display
             // has no specific provisions for landed vessels, and thus the display would be completely
             // wrong for landed vessels
-            if (radarCount == 1 && !availableRadars[0].omnidirectional)// && !vessel.Landed)
+            if (!omniDisplay)
             {
                 referenceTransform.position = vessel.CoM;
                 // Rotate reference transform such that we're pointed forwards along the radar's forward
@@ -1725,16 +1725,12 @@ namespace BDArmory.Radar
                     CycleActiveLock();
                 }
             }
-            else if (!omniDisplay) //SCAN MODE SELECTOR
+            else if (HasDirectionalSensor) //SCAN MODE SELECTOR (forward-looking radars and IRSTs)
             {
                 if (!locked)
                 {
-                    string boresightToggle = (availableRadars.Count > 0 ? availableRadars[0].boresightScan : availableIRSTs[0].boresightScan) ? "Scan" : "Boresight";
-                    if (GUI.Button(lockModeCycleRect, boresightToggle, GUI.skin.button))
-                    {
-                        if (availableRadars.Count > 0) availableRadars[0].boresightScan = !availableRadars[0].boresightScan;
-                        if (availableIRSTs.Count > 0) availableIRSTs[0].boresightScan = !availableIRSTs[0].boresightScan;
-                    }
+                    if (GUI.Button(lockModeCycleRect, BoresightScan ? "Scan" : "Boresight", GUI.skin.button))
+                        BoresightScan = !BoresightScan;
                 }
             }
 
@@ -2658,8 +2654,38 @@ namespace BDArmory.Radar
             }
         }
 
+        // BDArmory Lite: the contact clicked this frame (-1: none): a click anywhere near a contact picks the nearest one
+        // (each used to be a 16x8 px invisible button, rebuilt every sweep, so clicks were often lost).
+        int clickedContact = -1;
+        // BDArmory Lite: contact arrows turn smoothly towards each new heading estimate (they jumped, even spun, with the
+        // noise of every sweep).
+        readonly Dictionary<Vessel, float> contactHeadings = new Dictionary<Vessel, float>();
+        float SmoothedHeading(Vessel v, float measured)
+        {
+            if (v == null) return measured;
+            float shown;
+            if (!contactHeadings.TryGetValue(v, out shown)) shown = measured;
+            else if (Event.current.type == EventType.Repaint) shown = Mathf.LerpAngle(shown, measured, 1 - Mathf.Exp(-4f * Time.unscaledDeltaTime));
+            if (contactHeadings.Count > 128) contactHeadings.Clear();
+            contactHeadings[v] = shown;
+            return shown;
+        }
+        void FindClickedContact()
+        {
+            clickedContact = -1;
+            Event e = Event.current;
+            if (e.type != EventType.MouseDown || e.button != 0 || Time.time - guiInputTime <= guiInputCooldown) return;
+            float reach = 22 * BDArmorySettings.RADAR_WINDOW_SCALE, best = reach * reach;
+            for (int i = 0; i < displayedTargets.Count; i++)
+            {
+                float d = (displayedTargets[i].pingPosition - e.mousePosition).sqrMagnitude;
+                if (d < best) { best = d; clickedContact = i; }
+            }
+            if (clickedContact >= 0) { guiInputTime = Time.time; e.Use(); }
+        }
         private void DrawDisplayedContacts()
         {
+            FindClickedContact();
             var guiMatrix = GUI.matrix;
             float myAlt = (float)vessel.altitude;
 
@@ -2706,10 +2732,9 @@ namespace BDArmory.Radar
                             lockedTarget.signalStrength.ToString("0.0"));
                     }
 
-                    if (GUI.Button(pingRect, GUIContent.none, GUIStyle.none) &&
-                        Time.time - guiInputTime > guiInputCooldown)
+                    if (clickedContact == i)
                     {
-                        guiInputTime = Time.time;
+                        clickedContact = -1;
                         if (i == lockedTargetIndexes[activeLockedTargetIndex])
                         {
                             //UnlockTarget(displayedTargets[i].detectedByRadar);
@@ -2825,11 +2850,11 @@ namespace BDArmory.Radar
                     }
                     //draw contacts with direction indicator
                     else if (!jammed && (t.detectedByRadar.showDirectionWhileScan) &&
-                             tData.velocity.sqrMagnitude > 100f)
+                             tData.velocity.sqrMagnitude > 900f) // (30 m/s: below that the radar's velocity estimate is mostly noise)
                     {
                         pingRect = new Rect(pingPosition.x - (lockIconSize / 2), pingPosition.y - (lockIconSize / 2),
                             lockIconSize, lockIconSize);
-                        float vAngle = t.velAngle;
+                        float vAngle = SmoothedHeading(t.vessel, t.velAngle);
                         GUIUtility.RotateAroundPivot(vAngle, guiMatrix * pingPosition);
                         Color origGUIColor = GUI.color;
                         GUI.color = Color.white - new Color(0, 0, 0, minusAlpha);
@@ -2906,10 +2931,9 @@ namespace BDArmory.Radar
                         }
                     }
 
-                    if (GUI.Button(pingRect, GUIContent.none, GUIStyle.none) &&
-                        Time.time - guiInputTime > guiInputCooldown)
+                    if (clickedContact == i)
                     {
-                        guiInputTime = Time.time;
+                        clickedContact = -1;
                         TryLockTarget(t, true);
                     }
 
@@ -3064,9 +3088,32 @@ namespace BDArmory.Radar
             }
         }
 
-        private bool omniDisplay
+        // BDArmory Lite: always the 360° map (a single forward-looking radar used to switch the screen to a forward B-scope,
+        // and a second radar switched it back; forward radars show their scan wedge on the map instead).
+        private bool omniDisplay { get { return true; } }
+        // Forward-looking sensors present: they can be switched between scanning and a narrow boresight lock mode.
+        private bool HasDirectionalSensor
         {
-            get { return (radarCount > 1 || (radarCount == 1 && availableRadars[0].omnidirectional) || irstCount > 1 || (irstCount == 1 && !availableIRSTs[0].irstRanging)); }
+            get
+            {
+                for (int i = 0; i < availableRadars.Count; i++) if (availableRadars[i] && !availableRadars[i].omnidirectional) return true;
+                for (int i = 0; i < availableIRSTs.Count; i++) if (availableIRSTs[i] && availableIRSTs[i].irstRanging) return true;
+                return false;
+            }
+        }
+        private bool BoresightScan
+        {
+            get
+            {
+                for (int i = 0; i < availableRadars.Count; i++) if (availableRadars[i] && !availableRadars[i].omnidirectional) return availableRadars[i].boresightScan;
+                for (int i = 0; i < availableIRSTs.Count; i++) if (availableIRSTs[i] && availableIRSTs[i].irstRanging) return availableIRSTs[i].boresightScan;
+                return false;
+            }
+            set
+            {
+                for (int i = 0; i < availableRadars.Count; i++) if (availableRadars[i] && !availableRadars[i].omnidirectional) availableRadars[i].boresightScan = value;
+                for (int i = 0; i < availableIRSTs.Count; i++) if (availableIRSTs[i] && availableIRSTs[i].irstRanging) availableIRSTs[i].boresightScan = value;
+            }
         }
 
         private void UpdateInputs()
@@ -3127,11 +3174,8 @@ namespace BDArmory.Radar
             }
             if (BDInputUtils.GetKeyDown(BDInputSettingsFields.RADAR_SCAN_MODE))
             {
-                if (!locked && radarCount + irstCount > 0 && !omniDisplay)
-                {
-                    availableRadars[0].boresightScan = !availableRadars[0].boresightScan;
-                    availableIRSTs[0].boresightScan = !availableIRSTs[0].boresightScan;
-                }
+                if (!locked && HasDirectionalSensor)
+                    BoresightScan = !BoresightScan;
             }
             if (BDInputUtils.GetKeyDown(BDInputSettingsFields.RADAR_RANGE_UP))
             {

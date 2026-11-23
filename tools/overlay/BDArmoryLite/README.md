@@ -1,4 +1,4 @@
-# BDArmory Lite 2.1.5
+# BDArmory Lite 2.2.0
 
 A streamlined BDArmory for KSP 1.12.x: guns, missiles, bombs, radar, targeting, countermeasures,
 armour plates and the weapon manager, with the North Kerbin Dynamics Renewed (NKDR) weapons
@@ -25,6 +25,17 @@ don't draw on top of each other (sound and damage are unchanged). This follows V
 Explosion FX's settings: turn its explosions or "replace stock visuals" off, or watch a blast from
 beyond its effect distance, and BDArmory's visuals come back. There is also a toggle under
 Settings > Gameplay.
+
+## New in 2.2.0
+
+- Ballistic missiles (the M30 and others using ballistic guidance) fit their climb to the shot: the loft angle (Ballistic
+  Angle at most) is limited by the distance and the missile's turn rate, and the dive starts early enough to make the
+  turn. Short shots no longer climb at 45° and sail far past the target.
+- The radar screen is always the 360° map. A single forward-looking radar used to switch it to a forward B-scope (which
+  could show no contacts), and adding a second radar switched it back. Forward radars show their scan wedge on the map;
+  the Boresight/Scan button appears whenever one is fitted.
+- Radar contacts: click anywhere near one to lock it (the nearest within about 20 px); direction arrows turn smoothly
+  and only show for targets moving faster than 30 m/s (they jittered and spun with the radar's noisy estimates).
 
 ## New in 2.1.5
 
